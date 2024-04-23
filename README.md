@@ -1,2 +1,2 @@
 # Diabetes-Checker
-Project for programming 2 class
+A program that visualization risks for diabetes.
