@@ -9,9 +9,9 @@ class DiabetesUI(ctk.CTk):
         self.title("Diabetes analysis")
         self.tabs = ctk.CTkTabview(self)
         self.current = ctk.StringVar()
-        self.init_component()
+        self.init_choice_component()
 
-    def init_component(self):
+    def init_choice_component(self):
         self.tabs = ctk.CTkTabview(self)
         self.choices_tab()
         self.graph_tab()
@@ -52,10 +52,10 @@ class DiabetesUI(ctk.CTk):
             btn.pack(side=ctk.LEFT)
             bind_buttons()
 
-    def show_bmi(self, master):
+    def show_bmi(self):
         for i in self.winfo_children():
             i.destroy()
-        self.back_button(master)
+        self.back_button(self)
         BMI_image = Image.open('data/information_photos/bmi_info.png')
         my_BMI_image = ctk.CTkImage(light_image=BMI_image,
                                     dark_image=BMI_image,
@@ -75,7 +75,7 @@ class DiabetesUI(ctk.CTk):
     def goback(self):
         for i in self.winfo_children():
             i.destroy()
-        self.init_component()
+        self.init_choice_component()
 
     def run(self):
         self.mainloop()
