@@ -6,7 +6,6 @@ class Controller:
     def __init__(self, view: DiabetesUI, model: DiabetesModel):
         self.view = view
         self.model = model
-        self.init_component()
 
-    def init_component(self):
+    def start(self):
         self.view.run()

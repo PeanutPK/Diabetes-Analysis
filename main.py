@@ -5,4 +5,5 @@ from diabetes_model import DiabetesModel
 if __name__ == '__main__':
     view = DiabetesUI()
     model = DiabetesModel()
-    App = Controller(view, model)
+    app = Controller(view, model)
+    app.start()
