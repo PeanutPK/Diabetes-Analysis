@@ -24,12 +24,12 @@ class DiabetesUI(ctk.CTk):
         self.storytelling_tab()
         self.information_tab()
         self.graphs_plotting_tab()
-        self.tabs.pack(pady=10)
+        self.tabs.pack(pady=10, expand=True, fill='both')
 
     def create_buttons(self, master):
         for name in self.BUTTONS_NAMES:
             btn = ctk.CTkButton(master, text=name)
-            btn.pack(side=ctk.LEFT)
+            btn.pack(side=ctk.LEFT, expand=True, fill='x')
 
     def information_buttons_binding(self):
         for widget in self.info_tab.winfo_children():
@@ -39,6 +39,9 @@ class DiabetesUI(ctk.CTk):
 
     def storytelling_tab(self):
         self.home_tab = self.tabs.add('Home')
+        scroll_frame = ctk.CTkScrollableFrame(self.home_tab)
+
+        scroll_frame.pack()
 
     def information_tab(self):
         self.info_tab = self.tabs.add('Information')
