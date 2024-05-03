@@ -28,16 +28,13 @@ class DiabetesUI(ctk.CTk):
     def create_buttons(self, master):
         for name in self.BUTTONS_NAMES:
             btn = ctk.CTkButton(master, text=name)
-            if master == self.info_tab:
-                self.information_buttons_binding(name, btn)
-            elif master == self.graph_tab:
-                self.graphs_buttons_binding(name, btn)
             btn.pack(side=ctk.LEFT)
 
-    def information_buttons_binding(self, name, btn):
-        if name == 'BMI':
-            btn.configure(command=self.show_bmi)
-        btn.pack(side=ctk.LEFT)
+    def information_buttons_binding(self):
+        for widget in self.info_tab.winfo_children():
+            if isinstance(widget, ctk.CTkButton):
+                if widget.cget('text') == 'BMI':
+                    widget.configure(command=self.show_bmi)
 
     def storytelling_tab(self):
         self.home_tab = self.tabs.add('Home')
@@ -45,6 +42,7 @@ class DiabetesUI(ctk.CTk):
     def information_tab(self):
         self.info_tab = self.tabs.add('Information')
         self.create_buttons(self.info_tab)
+        self.information_buttons_binding()
 
     def show_bmi(self):
         for i in self.info_tab.winfo_children():
@@ -69,41 +67,25 @@ class DiabetesUI(ctk.CTk):
         combo.pack(side=ctk.TOP)
         self.create_buttons(self.graph_tab)
 
-        # def bind_buttons(event=None):
-        #     # For debug binding command.
-        #     # print('Binding ' + combo.get())
-        #     for widget in self.graph_tab.winfo_children():
-        #         if isinstance(widget, ctk.CTkButton):
-        #             if combo.get() == 'Histogram':
-        #                 widget.configure(command=
-        #                                  lambda name=widget.cget('text'): (
-        #                                      DiabetesModel.load_graph(name))
-        #                                  )
-        #             elif combo.get() == 'Statistic':
-        #                 widget.configure(command=
-        #                                  lambda name=widget.cget('text'): (
-        #                                      DiabetesModel.describe(
-        #                                          self.graph_tab,
-        #                                          name)))
+        def bind_buttons(event=None):
+            # For debug binding command.
+            # print('Binding ' + combo.get())
+            for widget in self.graph_tab.winfo_children():
+                if isinstance(widget, ctk.CTkButton):
+                    if combo.get() == 'Histogram':
+                        widget.configure(command=
+                                         lambda name=widget.cget('text'): (
+                                             DiabetesModel.load_graph(name))
+                                         )
+                    elif combo.get() == 'Statistic':
+                        widget.configure(command=
+                                         lambda name=widget.cget('text'): (
+                                             DiabetesModel.describe(
+                                                 self.graph_tab,
+                                                 name)))
 
-        # combo.configure(command=bind_buttons)
-        # for txt in self.BUTTONS_NAMES:
-        #     btn = ctk.CTkButton(self.graph_tab, text=txt)
-        #     btn.pack(side=ctk.LEFT)
-        #     bind_buttons()
-
-    def graphs_buttons_binding(self, name, btn):
-        print('Binding ' + self.current_combo())
-        if self.current_combo() == 'Histogram':
-            btn.configure(command=
-                          lambda btn_name=btn.cget('text'): (
-                              DiabetesModel.load_graph(btn_name))
-                          )
-        elif self.current_combo() == 'Statistic':
-            btn.configure(command=
-                          lambda: (
-                              DiabetesModel.describe(
-                                  self.graph_tab, name)))
+        combo.configure(command=bind_buttons)
+        bind_buttons()
 
     def back_button(self, master):
         button = ctk.CTkButton(master, text='go back',
