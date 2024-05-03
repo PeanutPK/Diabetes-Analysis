@@ -2,17 +2,20 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import customtkinter as ctk
+# from matplotlib.figure import Figure
+# from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 class DiabetesModel:
     @staticmethod
+    # canvas: FigureCanvasTkAgg
     def load_graph(name: str):
         file_csv = pd.read_csv('data/diabetes.csv')
 
         replace = {1: 'Diabetic', 0: 'Not Diabetic'}
         file_csv['Outcome'] = file_csv['Outcome'].replace(replace)
 
-        ax = sns.histplot(file_csv, x=name, hue='Outcome')
+        ax = sns.histplot(file_csv, x=name, hue='Outcome', multiple='stack')
 
         ax.set(xlabel='', ylabel='Frequency')
 
