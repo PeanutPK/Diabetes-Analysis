@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from tkinter import Menu
 from PIL import Image
 from diabetes_model import DiabetesModel
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -8,7 +9,11 @@ class DiabetesUI(ctk.CTk):
     BUTTONS_NAMES = ['BMI', 'BloodPressure', 'Age']
 
     def __init__(self, **kwargs):
+        """
+        Initialize tab and set the default size for a window as 600x315
+        """
         super().__init__(**kwargs)
+        ctk.set_default_color_theme('green')
         self.title("Diabetes analysis")
         self.geometry('600x315')
         self.tabs = ctk.CTkTabview(self)
@@ -19,7 +24,20 @@ class DiabetesUI(ctk.CTk):
         self.graph_tab = None
         self.init_choice_component()
 
+    def setup_menubar(self):
+        """
+        set up menubar with exit function
+        """
+        # create menu object
+        menubar = Menu(self)
+        self.config(menu=menubar)
+
+        # setup exit menu command
+        menu_options = Menu(menubar)
+        menu_options.add_command(label='Exit', command=self.destroy)
+
     def init_choice_component(self):
+        self.setup_menubar()
         self.tabs = ctk.CTkTabview(self)
         self.storytelling_tab()
         self.information_tab()
