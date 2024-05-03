@@ -23,13 +23,14 @@ class DiabetesModel:
         plt.show()
 
     @staticmethod
-    def describe(master: ctk.CTkFrame, name: str):
+    def describe(master, name: str):
         for child in master.winfo_children():
-            child.destroy()
+            if not isinstance(child, ctk.CTkTabview):
+                child.destroy()
         file_csv = pd.read_csv('data/diabetes.csv')
 
         label = ctk.CTkLabel(master, text=file_csv[name].describe())
-        label.pack()
+        label.pack(side=ctk.LEFT)
 
 
 if __name__ == '__main__':
