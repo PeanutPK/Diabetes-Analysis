@@ -10,6 +10,7 @@ class DiabetesUI(ctk.CTk):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.title("Diabetes analysis")
+        self.geometry('600x315')
         self.tabs = ctk.CTkTabview(self)
         self.current_combo = None
 
