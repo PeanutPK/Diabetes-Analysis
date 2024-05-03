@@ -21,7 +21,6 @@ class DiabetesUI(ctk.CTk):
         super().__init__(**kwargs)
         ctk.set_default_color_theme('green')
         self.title("Diabetes analysis")
-        self.geometry('600x315')
         self.tabs = ctk.CTkTabview(self)
         self.current_combo = None
 
@@ -51,7 +50,13 @@ class DiabetesUI(ctk.CTk):
         self.storytelling_tab()
         self.information_tab()
         self.graphs_plotting_tab()
+        self.tabs.configure(command=self.tab_changes_handler)
         self.tabs.pack(pady=10, expand=True, fill='both', side=ctk.LEFT)
+
+    def tab_changes_handler(self):
+        for widget in self.winfo_children():
+            if not isinstance(widget, ctk.CTkTabview):
+                widget.destroy()
 
     def create_buttons(self, master):
         """
@@ -60,7 +65,7 @@ class DiabetesUI(ctk.CTk):
         """
         for name in self.BUTTONS_NAMES:
             btn = ctk.CTkButton(master, text=name)
-            btn.pack(side=ctk.TOP, expand=True, fill='y')
+            btn.pack(side=ctk.LEFT, expand=True, fill='y', anchor='s')
 
     def information_buttons_binding(self):
         """
