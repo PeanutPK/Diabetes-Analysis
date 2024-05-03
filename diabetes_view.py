@@ -92,9 +92,12 @@ class DiabetesUI(ctk.CTk):
 
         desc_stat_btn = ctk.CTkButton(self.home_tab,
                                       text='Descriptive Statistic')
+        # TODO make a graph picture and add to storytelling page
+
         desc_stat_btn.pack(side=ctk.TOP, expand=True, fill='both')
 
     def desc_stat_btn_handler(self):
+        # TODO make descriptive statistic button handler
         pass
 
     @staticmethod
