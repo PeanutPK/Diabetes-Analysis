@@ -3,9 +3,9 @@ from diabetes_model import DiabetesModel
 
 
 class Controller:
-    def __init__(self, view: DiabetesUI, model: DiabetesModel):
-        self.view = view
-        self.model = model
+    def __init__(self):
+        self.view = DiabetesUI()
+        self.model = DiabetesModel()
 
     def start(self):
         self.view.run()

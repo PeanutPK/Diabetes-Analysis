@@ -54,6 +54,7 @@ class DiabetesUI(ctk.CTk):
         self.tabs.pack(pady=10, expand=True, fill='both', side=ctk.LEFT)
 
     def tab_changes_handler(self):
+        """For clearing others widget, that is not TabView widget."""
         for widget in self.winfo_children():
             if not isinstance(widget, ctk.CTkTabview):
                 widget.destroy()
@@ -65,7 +66,7 @@ class DiabetesUI(ctk.CTk):
         """
         for name in self.BUTTONS_NAMES:
             btn = ctk.CTkButton(master, text=name)
-            btn.pack(side=ctk.LEFT, expand=True, fill='y', anchor='s')
+            btn.pack(side=ctk.LEFT, expand=True, fill='x', anchor='center')
 
     def information_buttons_binding(self):
         """
@@ -137,9 +138,8 @@ class DiabetesUI(ctk.CTk):
         In the future, there will be more types of graphs.
         """
         self.graph_tab = self.tabs.add('Graphs')
-        combo = ctk.CTkComboBox(self.graph_tab,
-                                values=['Histogram', 'Statistic'],
-                                state='readonly')
+        combo = ctk.CTkComboBox(self.graph_tab, state='readonly',
+                                values=['Histogram', 'Statistic'])
         combo.set('Histogram')
         self.current_combo = lambda: combo.get()
         combo.pack(side=ctk.TOP)
@@ -147,13 +147,17 @@ class DiabetesUI(ctk.CTk):
 
         def bind_buttons(event=None):
             """Bind buttons when the combo box changes the function."""
+            for widget in self.winfo_children():
+                if not isinstance(widget, ctk.CTkTabview):
+                    widget.destroy()
+
             for widget in self.graph_tab.winfo_children():
                 if isinstance(widget, ctk.CTkButton):
                     if combo.get() == 'Histogram':
                         widget.configure(command=
                                          lambda name=widget.cget('text'): (
-                                             DiabetesModel.load_graph(name))
-                                         )
+                                             DiabetesModel.load_graph(self,
+                                                                      name)))
                     elif combo.get() == 'Statistic':
                         widget.configure(command=
                                          lambda name=widget.cget('text'): (
@@ -164,6 +168,11 @@ class DiabetesUI(ctk.CTk):
         bind_buttons()
 
     def back_button(self, master):
+        """
+        Button that returns to the previous page.
+        :param master: Root of the window before going to another page
+        :return:
+        """
         button = ctk.CTkButton(master, text='go back',
                                command=lambda: self.goback(master))
         button.pack(side=ctk.TOP)
@@ -172,6 +181,10 @@ class DiabetesUI(ctk.CTk):
         for widget in master.winfo_children():
             widget.destroy()
         self.create_buttons(master)
+
+    @staticmethod
+    def pack(widget, side):
+        widget.pack(side=side)
 
     def run(self):
         self.mainloop()

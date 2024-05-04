@@ -3,24 +3,31 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import customtkinter as ctk
 # from matplotlib.figure import Figure
-# from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 class DiabetesModel:
     @staticmethod
     # canvas: FigureCanvasTkAgg
-    def load_graph(name: str):
+    def load_graph(master: ctk.CTkFrame, name: str):
+        for widget in master.winfo_children():
+            if not isinstance(widget, ctk.CTkTabview):
+                widget.destroy()
         file_csv = pd.read_csv('data/diabetes.csv')
 
         replace = {1: 'Diabetic', 0: 'Not Diabetic'}
         file_csv['Outcome'] = file_csv['Outcome'].replace(replace)
 
-        ax = sns.histplot(file_csv, x=name, hue='Outcome', multiple='stack')
+        fig, ax = plt.subplots()
+
+        sns.histplot(file_csv, x=name, hue='Outcome', multiple='stack')
 
         ax.set(xlabel='', ylabel='Frequency')
 
         plt.title('Diabetes Outcome for ' + name)
-        plt.show()
+        canvas = FigureCanvasTkAgg(fig, master=master)
+        canvas.get_tk_widget().pack(side=ctk.LEFT)
+        canvas.draw()
 
     @staticmethod
     def describe(master, name: str):
