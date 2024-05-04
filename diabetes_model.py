@@ -5,26 +5,36 @@ import seaborn as sns
 import customtkinter as ctk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-sns.set_theme(rc={'figure.figsize': (2, 2)})
+sns.set_theme(rc={'figure.figsize': (3, 3)})
+
+FILE_CSV = pd.read_csv('data/diabetes.csv')
+REPLACE = {1: 'Diabetic', 0: 'Not Diabetic'}
+FILE_CSV['Outcome'] = FILE_CSV['Outcome'].replace(REPLACE)
+NAMES = ['BMI', 'BloodPressure', 'Age', 'Glucose']
 
 
 class DiabetesModel:
-    FILE_CSV = pd.read_csv('data/diabetes.csv')
-    REPLACE = {1: 'Diabetic', 0: 'Not Diabetic'}
-    FILE_CSV['Outcome'] = FILE_CSV['Outcome'].replace(REPLACE)
-    NAMES = ['BMI', 'BloodPressure', 'Age', 'Glucose']
+    """
+    Module for computing and sometimes draw a graph (when the pattern is done)
+    """
 
-    def load_graph(self, master: ctk.CTk, name: str):
+    @staticmethod
+    def load_graph(master: ctk.CTk, name: str):
+        """
+        Load a graph from the input name and pack it to the origin root.
+        :param master: Original frame or root.
+        :param name: Name of the data to display histogram
+        """
         for widget in master.winfo_children():
             if not isinstance(widget, (ctk.CTkTabview, ctk.CTkFrame)):
                 widget.destroy()
 
         replace = {1: 'Diabetic', 0: 'Not Diabetic'}
-        self.FILE_CSV['Outcome'] = self.FILE_CSV['Outcome'].replace(replace)
+        FILE_CSV['Outcome'] = FILE_CSV['Outcome'].replace(replace)
 
         fig, ax = plt.subplots()
 
-        sns.histplot(self.FILE_CSV, x=name, hue='Outcome', multiple='stack')
+        sns.histplot(FILE_CSV, x=name, hue='Outcome', multiple='stack')
 
         ax.set(xlabel='', ylabel='Frequency')
 
@@ -33,42 +43,50 @@ class DiabetesModel:
         canvas.get_tk_widget().pack(side=ctk.LEFT)
         canvas.draw()
 
-    def describe(self, master, name: str):
+    @staticmethod
+    def describe(master, name: str):
+        """
+        Describe all descriptive statistic and dispersion from the csv file.
+        :param master:
+        :param name:
+        """
         for child in master.winfo_children():
             if not isinstance(child, ctk.CTkTabview):
                 child.destroy()
 
-        label = ctk.CTkLabel(master, text=self.FILE_CSV[name].describe())
+        label = ctk.CTkLabel(master, text=FILE_CSV[name].describe())
         label.pack(side=ctk.LEFT)
 
-    def load_storytelling_hist(self, master: ctk.CTkScrollableFrame):
+    @staticmethod
+    def load_storytelling_hist(master: ctk.CTkScrollableFrame):
         """Load all histograms only for storytelling page"""
-
-        for name in self.NAMES:
+        for name in NAMES:
             fig, ax = plt.subplots()
 
-            sns.histplot(self.FILE_CSV, x=name, hue='Outcome',
+            sns.histplot(FILE_CSV, x=name, hue='Outcome',
                          multiple='stack')
 
             ax.set(ylabel='Frequency')
 
             plt.title('Outcome for ' + name)
             canvas = FigureCanvasTkAgg(fig, master=master)
-            canvas.get_tk_widget().pack(side=ctk.TOP)
+            canvas.get_tk_widget().pack(side=ctk.TOP, expand=True, fill='both')
             canvas.draw()
 
-    def load_storytelling_stat(self, master):
-        for name in self.NAMES:
+    @staticmethod
+    def load_storytelling_stat(master):
+        for name in NAMES:
             label = ctk.CTkLabel(master,
-                                 text=f"{self.FILE_CSV[name].describe()}\n")
+                                 text=f"{FILE_CSV[name].describe()}\n")
             label.pack(side=ctk.TOP)
 
-    def load_correlations_scatter(self, master, x, y):
+    @staticmethod
+    def load_correlations_scatter(master, x, y):
         fig, ax = plt.subplots()
 
-        coefficient = np.corrcoef(self.FILE_CSV[x], self.FILE_CSV[y])[0, 1]
+        coefficient = np.corrcoef(FILE_CSV[x], FILE_CSV[y])[0, 1]
 
-        sns.scatterplot(self.FILE_CSV, x=x, y=y, hue='Outcome')
+        sns.scatterplot(FILE_CSV, x=x, y=y, hue='Outcome')
 
         ax.set(xlabel=x, ylabel=y)
 

@@ -9,9 +9,11 @@ INTRO_TEXT = ("Introduction\n\n"
               "by National Institute of Diabetes and Digestive and "
               "Kidney Diseases.\n\n")
 
+OPTIONS = {'expand': 'True', 'fill': 'both', 'pady': 5, 'padx': 5}
+BUTTONS_NAMES = ['BMI', 'BloodPressure', 'Age', 'Glucose']
+
 
 class DiabetesUI(ctk.CTk):
-    BUTTONS_NAMES = ['BMI', 'BloodPressure', 'Age', 'Glucose']
 
     def __init__(self, **kwargs):
         """
@@ -19,10 +21,11 @@ class DiabetesUI(ctk.CTk):
         """
         super().__init__(**kwargs)
         ctk.set_default_color_theme('green')
+        self.model = DiabetesModel()
+        self.toplevel = None
         self.title("Diabetes analysis")
         self.tabs = ctk.CTkTabview(self)
         self.current_combo = None
-
         self.home_tab = None
         self.info_tab = None
         self.graph_tab = None
@@ -37,8 +40,8 @@ class DiabetesUI(ctk.CTk):
         self.config(menu=menubar)
 
         # setup exit menu command
-        menu_options = Menu(menubar)
-        menu_options.add_command(label='Exit', command=self.destroy)
+        menu_OPTIONS = Menu(menubar)
+        menu_OPTIONS.add_command(label='Exit', command=self.destroy)
 
     def init_component(self):
         """
@@ -58,14 +61,15 @@ class DiabetesUI(ctk.CTk):
             if not isinstance(widget, ctk.CTkTabview):
                 widget.destroy()
 
-    def create_buttons(self, master):
+    @staticmethod
+    def create_buttons(master):
         """
         Initialize buttons for tabs.
         :param master: Root window for buttons.
         """
-        for name in self.BUTTONS_NAMES:
+        for name in BUTTONS_NAMES:
             btn = ctk.CTkButton(master, text=name)
-            btn.pack(side=ctk.LEFT, expand=True, fill='x', anchor='center')
+            btn.pack(side=ctk.LEFT, anchor='center', **OPTIONS)
 
     def information_buttons_binding(self):
         """
@@ -84,28 +88,77 @@ class DiabetesUI(ctk.CTk):
         wrap_length = self.winfo_width()
 
         scroll_frame = ctk.CTkScrollableFrame(self.home_tab)
-        scroll_frame.pack(expand=True, fill='both')
+        scroll_frame.pack(**OPTIONS)
 
         textbox = self.create_text_label(scroll_frame, wrap_length,
                                          INTRO_TEXT)
-        textbox.pack(expand=True, fill='both', side=ctk.TOP)
+        textbox.pack(side=ctk.TOP, **OPTIONS)
 
+        # Create button for the statistic descriptions popup window
         desc_stat_btn = ctk.CTkButton(scroll_frame,
                                       text='Descriptive Statistic')
         desc_stat_btn.bind('<Button-1>',
                            command=self.desc_stat_btn_handler)
+        desc_stat_btn.pack(side=ctk.TOP, **OPTIONS)
+
+        # Create button for the histograms popup window
+        hist_btn = ctk.CTkButton(scroll_frame, text='Histogram')
+        hist_btn.bind('<Button-1>', command=self.hist_btn_handler)
+        hist_btn.pack(side=ctk.TOP, **OPTIONS)
+
+        # Create button for scatter plots with a correlations popup window
+        hist_btn = ctk.CTkButton(scroll_frame, text='Correlation')
+        hist_btn.bind('<Button-1>', command=self.corr_btn_handler)
+        hist_btn.pack(side=ctk.TOP, **OPTIONS)
 
         # TODO make a graph picture and add to storytelling page
 
-        desc_stat_btn.pack(side=ctk.TOP, expand=True, fill='both')
+    def desc_stat_btn_handler(self, event=None):
+        """
+        Handler for statistic button to show descriptive statistics.
+        :param event: Widget event handler that usually set as none.
+        """
+        if self.toplevel is None or not self.toplevel.winfo_exists():
+            storytelling = ctk.CTkToplevel()
+            storytelling.title('Descriptive Statistic')
 
-    @staticmethod
-    def desc_stat_btn_handler(event=None):
-        # TODO make descriptive statistic button handler
-        storytelling = ctk.CTkToplevel()
-        scrollable = ctk.CTkScrollableFrame(storytelling)
-        scrollable.pack()
-        DiabetesModel().load_storytelling_stat(scrollable)
+            scrollable = ctk.CTkScrollableFrame(storytelling)
+            scrollable.pack()
+            self.model.load_storytelling_stat(scrollable)
+            self.toplevel = storytelling
+        else:
+            self.toplevel.focus()
+
+    def hist_btn_handler(self, event=None):
+        """
+        Handler for histogram button to show histograms.
+        :param event: Widget event handler that usually set as none.
+        """
+        if self.toplevel is None or not self.toplevel.winfo_exists():
+            storytelling = ctk.CTkToplevel()
+            storytelling.title('Histograms')
+
+            scrollable = ctk.CTkScrollableFrame(storytelling)
+            scrollable.pack(expand=True, fill='both')
+            self.model.load_storytelling_hist(scrollable)
+            self.toplevel = storytelling
+        else:
+            self.toplevel.focus()
+
+    def corr_btn_handler(self, event=None):
+        """
+        Handler for histogram button to show histograms.
+        :param event: Widget event handler that usually set as none.
+        """
+        if self.toplevel is None or not self.toplevel.winfo_exists():
+            storytelling = ctk.CTkToplevel()
+            storytelling.title('Correlations')
+            scrollable = ctk.CTkScrollableFrame(storytelling)
+            scrollable.pack(expand=True, fill='both')
+            self.model.load_storytelling_corr(scrollable)
+            self.toplevel = storytelling
+        else:
+            self.toplevel.focus()
 
     @staticmethod
     def create_text_label(master, length, text):
@@ -135,7 +188,7 @@ class DiabetesUI(ctk.CTk):
         BMI_label = ctk.CTkLabel(self.info_tab, image=my_BMI_image, text='',
                                  bg_color='transparent')
         BMI_label.bind('<Button-1>', command=lambda x: print("clicked"))
-        BMI_label.pack(fill='both', expand=True)
+        BMI_label.pack(**OPTIONS)
 
     def graphs_plotting_tab(self):
         """
@@ -162,13 +215,13 @@ class DiabetesUI(ctk.CTk):
                     if combo.get() == 'Histogram':
                         widget.configure(command=
                                          lambda name=widget.cget('text'): (
-                                             DiabetesModel.load_graph(self,
-                                                                      name)))
+                                             self.model.load_graph(self,
+                                                                   name)))
                     elif combo.get() == 'Statistic':
                         widget.configure(command=
                                          lambda name=widget.cget('text'): (
-                                             DiabetesModel.describe(self,
-                                                                    name)))
+                                             self.model.describe(self,
+                                                                 name)))
 
         combo.configure(command=bind_buttons)
         bind_buttons()
@@ -187,10 +240,6 @@ class DiabetesUI(ctk.CTk):
         for widget in master.winfo_children():
             widget.destroy()
         self.create_buttons(master)
-
-    @staticmethod
-    def pack(widget, side):
-        widget.pack(side=side)
 
     def run(self):
         self.mainloop()
