@@ -1,11 +1,5 @@
-pip~=24.0
-wheel~=0.43.0
-cryptography~=43.0.0.dev1
-pillow~=10.3.0
-setuptools~=69.0.3
-packaging~=24.0
-pyparsing~=3.1.2
 customtkinter~=5.2.2
+pillow~=10.3.0
 numpy~=2.0.0rc1
 pandas~=2.2.2
 matplotlib~=3.9.0rc2
