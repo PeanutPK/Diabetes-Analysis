@@ -37,11 +37,13 @@ class DiabetesUI(ctk.CTk):
         """
         # create menu object
         menubar = Menu(self)
-        self.config(menu=menubar)
 
         # setup exit menu command
-        menu_OPTIONS = Menu(menubar)
-        menu_OPTIONS.add_command(label='Exit', command=self.destroy)
+        exit_menu = Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Exit menu", menu=exit_menu)
+        exit_menu.add_command(label='Exit', command=self.destroy)
+
+        self.config(menu=menubar)
 
     def init_component(self):
         """
@@ -110,7 +112,6 @@ class DiabetesUI(ctk.CTk):
         hist_btn = ctk.CTkButton(scroll_frame, text='Correlation')
         hist_btn.bind('<Button-1>', command=self.corr_btn_handler)
         hist_btn.pack(side=ctk.TOP, **OPTIONS)
-
 
     def desc_stat_btn_handler(self, event=None):
         """
