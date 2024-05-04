@@ -88,11 +88,14 @@ class DiabetesUI(ctk.CTk):
                                          INTRO_TEXT)
         textbox.pack(side=ctk.TOP, **OPTIONS)
 
+        pie_btn = ctk.CTkButton(scroll_frame, text='Show Ratio Pie Chart')
+        pie_btn.bind('<Button-1>', command=self.pie_btn_handler)
+        pie_btn.pack(side=ctk.TOP, **OPTIONS)
+
         # Create button for the statistic descriptions popup window
         desc_stat_btn = ctk.CTkButton(scroll_frame,
                                       text='Descriptive Statistic')
-        desc_stat_btn.bind('<Button-1>',
-                           command=self.desc_stat_btn_handler)
+        desc_stat_btn.bind('<Button-1>', command=self.desc_stat_btn_handler)
         desc_stat_btn.pack(side=ctk.TOP, **OPTIONS)
 
         # Create button for the histograms popup window
@@ -104,6 +107,21 @@ class DiabetesUI(ctk.CTk):
         hist_btn = ctk.CTkButton(scroll_frame, text='Correlation')
         hist_btn.bind('<Button-1>', command=self.corr_btn_handler)
         hist_btn.pack(side=ctk.TOP, **OPTIONS)
+
+    def pie_btn_handler(self, event=None):
+        """
+        Handler for histogram button to show histograms.
+        :param event: Widget event handler that usually set as none.
+        """
+        if self.toplevel is None or not self.toplevel.winfo_exists():
+            storytelling = ctk.CTkToplevel()
+            storytelling.title('Ratio of diabetic vs non-diabetic data')
+            scrollable = ctk.CTkScrollableFrame(storytelling)
+            scrollable.pack(expand=True, fill='both')
+            self.model.load_pie_chart(scrollable)
+            self.toplevel = storytelling
+        else:
+            self.toplevel.focus()
 
     def desc_stat_btn_handler(self, event=None):
         """

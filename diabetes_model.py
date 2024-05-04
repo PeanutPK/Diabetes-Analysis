@@ -6,6 +6,7 @@ import customtkinter as ctk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 sns.set_theme(rc={'figure.figsize': (3, 3)})
+plt.rcParams['figure.figsize'] = [3, 3]
 
 FILE_CSV = pd.read_csv('data/diabetes.csv')
 REPLACE = {1: 'Diabetic', 0: 'Not Diabetic'}
@@ -108,10 +109,10 @@ class DiabetesModel:
         fig, ax = plt.subplots()
 
         ax.pie(diabetics, labels=diabetics.index, autopct='%1.1f%%')
+        plt.title('Ratio of Diabetics and Non-Diabetics')
 
-        plt.title('Ratio between Diabetics and Non-Diabetics')
         canvas = FigureCanvasTkAgg(fig, master=master)
-        canvas.get_tk_widget().pack(side=ctk.TOP, fill='both')
+        canvas.get_tk_widget().pack(side=ctk.TOP, expand=True, fill='both')
 
         canvas.draw()
 
