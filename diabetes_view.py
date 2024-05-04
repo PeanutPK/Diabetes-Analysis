@@ -2,13 +2,12 @@ import customtkinter as ctk
 from tkinter import Menu
 from PIL import Image
 from diabetes_model import DiabetesModel
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 INTRO_TEXT = ("Introduction\n\n"
               "Diabetes Analysis is a program that help the user "
               "analyze their health risks depends on the data provided "
               "by National Institute of Diabetes and Digestive and "
-              "Kidney Diseases.")
+              "Kidney Diseases.\n\n")
 
 
 class DiabetesUI(ctk.CTk):
@@ -91,15 +90,22 @@ class DiabetesUI(ctk.CTk):
                                          INTRO_TEXT)
         textbox.pack(expand=True, fill='both', side=ctk.TOP)
 
-        desc_stat_btn = ctk.CTkButton(self.home_tab,
+        desc_stat_btn = ctk.CTkButton(scroll_frame,
                                       text='Descriptive Statistic')
+        desc_stat_btn.bind('<Button-1>',
+                           command=self.desc_stat_btn_handler)
+
         # TODO make a graph picture and add to storytelling page
 
         desc_stat_btn.pack(side=ctk.TOP, expand=True, fill='both')
 
-    def desc_stat_btn_handler(self):
+    @staticmethod
+    def desc_stat_btn_handler(event=None):
         # TODO make descriptive statistic button handler
-        pass
+        storytelling = ctk.CTkToplevel()
+        scrollable = ctk.CTkScrollableFrame(storytelling)
+        scrollable.pack()
+        DiabetesModel().load_storytelling_stat(scrollable)
 
     @staticmethod
     def create_text_label(master, length, text):
