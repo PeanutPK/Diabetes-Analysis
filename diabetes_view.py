@@ -21,9 +21,11 @@ class DiabetesUI(ctk.CTk):
         """
         super().__init__(**kwargs)
         ctk.set_default_color_theme('green')
+        self.title("Diabetes analysis")
+
         self.model = DiabetesModel()
         self.toplevel = None
-        self.title("Diabetes analysis")
+
         self.tabs = ctk.CTkTabview(self)
         self.current_combo = None
         self.home_tab = None
@@ -49,7 +51,6 @@ class DiabetesUI(ctk.CTk):
         """
         Setup all tabs and menubar function
         """
-        self.setup_menubar()
         self.tabs = ctk.CTkTabview(self)
         self.storytelling_tab()
         self.information_tab()
@@ -72,15 +73,6 @@ class DiabetesUI(ctk.CTk):
         for name in BUTTONS_NAMES:
             btn = ctk.CTkButton(master, text=name)
             btn.pack(side=ctk.LEFT, anchor='center', **OPTIONS)
-
-    def information_buttons_binding(self):
-        """
-        Bind buttons for information tab.
-        """
-        for widget in self.info_tab.winfo_children():
-            if isinstance(widget, ctk.CTkButton):
-                if widget.cget('text') == 'BMI':
-                    widget.configure(command=self.show_bmi)
 
     def storytelling_tab(self):
         """
@@ -173,9 +165,36 @@ class DiabetesUI(ctk.CTk):
         self.create_buttons(self.info_tab)
         self.information_buttons_binding()
 
+    def information_buttons_binding(self):
+        """
+        Bind buttons for information tab.
+        """
+        for widget in self.info_tab.winfo_children():
+            if isinstance(widget, ctk.CTkButton):
+                if widget.cget('text') == 'BMI':
+                    widget.configure(command=self.show_bmi)
+                else:
+                    widget.configure(command=self.unfinished_information_tab)
+
+    def unfinished_information_tab(self):
+        """
+        Display an unfinished message for user to wait for further development.
+        """
+        sorry_message = ('Sorry for your inconvenience.\n'
+                         'This page is under construction '
+                         'please wait until the next update.')
+        my_font = ctk.CTkFont(family='<Calibri>', size=25, weight='bold')
+        for i in self.info_tab.winfo_children():
+            i.destroy()
+        self.back_button(self.info_tab)
+        BMI_label = ctk.CTkLabel(self.info_tab, text=sorry_message,
+                                 bg_color='transparent', font=my_font)
+        BMI_label.bind('<Button-1>', command=lambda x: print("clicked"))
+        BMI_label.pack(**OPTIONS)
+
     def show_bmi(self):
         """
-        Load and show the image of BMI photo.
+        Load and show the image of BMI standard value information photo.
         """
         for i in self.info_tab.winfo_children():
             i.destroy()
@@ -237,11 +256,21 @@ class DiabetesUI(ctk.CTk):
         button.pack(side=ctk.TOP)
 
     def goback(self, master: ctk.CTkFrame):
+        """
+        A back button handle to return to the master frame.
+        :param master: Origin frame.
+        """
         for widget in master.winfo_children():
             widget.destroy()
         self.create_buttons(master)
+        if master == self.info_tab:
+            self.information_buttons_binding()
 
     def run(self):
+        """
+        Set up the menu bars and loop the main window.
+        """
+        self.setup_menubar()
         self.mainloop()
 
 
