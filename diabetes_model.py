@@ -102,6 +102,19 @@ class DiabetesModel:
         self.load_correlations_scatter(master, 'Glucose', 'Insulin')
         self.load_correlations_scatter(master, 'Glucose', 'BMI')
 
+    @staticmethod
+    def load_pie_chart(master):
+        diabetics = FILE_CSV['Outcome'].value_counts()
+        fig, ax = plt.subplots()
+
+        ax.pie(diabetics, labels=diabetics.index, autopct='%1.1f%%')
+
+        plt.title('Ratio between Diabetics and Non-Diabetics')
+        canvas = FigureCanvasTkAgg(fig, master=master)
+        canvas.get_tk_widget().pack(side=ctk.TOP, fill='both')
+
+        canvas.draw()
+
 
 if __name__ == '__main__':
     root = ctk.CTk()
@@ -114,6 +127,7 @@ if __name__ == '__main__':
 
     # DiabetesModel().load_storytelling_hist(scrollable)
     # DiabetesModel().load_storytelling_stat(scrollable)
-    DiabetesModel().load_storytelling_corr(scrollable)
+    # DiabetesModel().load_storytelling_corr(scrollable)
+    # DiabetesModel().load_pie_chart(scrollable)
 
     root.mainloop()
