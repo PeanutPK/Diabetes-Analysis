@@ -111,7 +111,6 @@ class DiabetesUI(ctk.CTk):
         hist_btn.bind('<Button-1>', command=self.corr_btn_handler)
         hist_btn.pack(side=ctk.TOP, **OPTIONS)
 
-        # TODO make a graph picture and add to storytelling page
 
     def desc_stat_btn_handler(self, event=None):
         """
