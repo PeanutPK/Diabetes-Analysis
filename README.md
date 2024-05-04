@@ -4,7 +4,7 @@ A visualization program designed to help users check their risk levels for diabe
 
 ## Running the application
 
-1. Clone the file from github
+1. Clone the file from GitHub
 2. Install all requirements in requirements.txt
 3. Run main.py file
 ```
