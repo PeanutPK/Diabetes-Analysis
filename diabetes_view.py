@@ -293,7 +293,10 @@ class DiabetesUI(ctk.CTk):
     def run(self):
         """
         Set up the menu bars and loop the main window.
+        Set protocol for an exiting window
+        as quit to stop any process after mainloop.
         """
+        self.protocol("WM_DELETE_WINDOW", self.quit)
         self.setup_menubar()
         self.mainloop()
 
