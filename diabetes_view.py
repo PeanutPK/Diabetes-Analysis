@@ -116,8 +116,10 @@ class DiabetesUI(ctk.CTk):
         if self.toplevel is None or not self.toplevel.winfo_exists():
             storytelling = ctk.CTkToplevel()
             storytelling.title('Ratio of diabetic vs non-diabetic data')
+            storytelling.attributes('-topmost', True)
+
             scrollable = ctk.CTkScrollableFrame(storytelling)
-            scrollable.pack(expand=True, fill='both')
+            scrollable.pack(**OPTIONS)
             self.model.load_pie_chart(scrollable)
             self.toplevel = storytelling
         else:
@@ -131,9 +133,10 @@ class DiabetesUI(ctk.CTk):
         if self.toplevel is None or not self.toplevel.winfo_exists():
             storytelling = ctk.CTkToplevel()
             storytelling.title('Descriptive Statistic')
+            storytelling.attributes('-topmost', True)
 
             scrollable = ctk.CTkScrollableFrame(storytelling)
-            scrollable.pack()
+            scrollable.pack(**OPTIONS)
             self.model.load_storytelling_stat(scrollable)
             self.toplevel = storytelling
         else:
@@ -147,9 +150,10 @@ class DiabetesUI(ctk.CTk):
         if self.toplevel is None or not self.toplevel.winfo_exists():
             storytelling = ctk.CTkToplevel()
             storytelling.title('Histograms')
+            storytelling.attributes('-topmost', True)
 
             scrollable = ctk.CTkScrollableFrame(storytelling)
-            scrollable.pack(expand=True, fill='both')
+            scrollable.pack(**OPTIONS)
             self.model.load_storytelling_hist(scrollable)
             self.toplevel = storytelling
         else:
@@ -163,8 +167,10 @@ class DiabetesUI(ctk.CTk):
         if self.toplevel is None or not self.toplevel.winfo_exists():
             storytelling = ctk.CTkToplevel()
             storytelling.title('Correlations')
+            storytelling.attributes('-topmost', True)
+
             scrollable = ctk.CTkScrollableFrame(storytelling)
-            scrollable.pack(expand=True, fill='both')
+            scrollable.pack(**OPTIONS)
             self.model.load_storytelling_corr(scrollable)
             self.toplevel = storytelling
         else:

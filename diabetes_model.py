@@ -26,6 +26,7 @@ class DiabetesModel:
         :param master: Original frame or root.
         :param name: Name of the data to display histogram
         """
+
         for widget in master.winfo_children():
             if not isinstance(widget, (ctk.CTkTabview, ctk.CTkFrame)):
                 widget.destroy()
@@ -76,6 +77,7 @@ class DiabetesModel:
 
     @staticmethod
     def load_storytelling_stat(master):
+
         for name in NAMES:
             label = ctk.CTkLabel(master,
                                  text=f"{FILE_CSV[name].describe()}\n")
@@ -83,6 +85,7 @@ class DiabetesModel:
 
     @staticmethod
     def load_correlations_scatter(master, x, y):
+
         fig, ax = plt.subplots()
 
         coefficient = np.corrcoef(FILE_CSV[x], FILE_CSV[y])[0, 1]
@@ -99,12 +102,14 @@ class DiabetesModel:
         canvas.draw()
 
     def load_storytelling_corr(self, master):
+
         self.load_correlations_scatter(master, 'BMI', 'BloodPressure')
         self.load_correlations_scatter(master, 'Glucose', 'Insulin')
         self.load_correlations_scatter(master, 'Glucose', 'BMI')
 
     @staticmethod
     def load_pie_chart(master):
+
         diabetics = FILE_CSV['Outcome'].value_counts()
         fig, ax = plt.subplots()
 
