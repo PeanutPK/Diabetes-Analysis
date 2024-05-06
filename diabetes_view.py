@@ -26,12 +26,14 @@ class DiabetesUI(ctk.CTk):
         self.model = DiabetesModel()
         self.toplevel = None
 
+        self.current_image = None  # current image in the information tab
+        self.current_combo = None  # current selected combobox
+
         self.tabs = ctk.CTkTabview(self)
-        self.current_combo = None
-        self.btn_frame = None   # Frame for buttons in graph tab and info tab
-        self.home_tab = None    # Home tab / storytelling
-        self.info_tab = None    # Information showing tab
-        self.graph_tab = None   # Graph showing tab depends on user selection
+        self.btn_frame = None  # Frame for buttons in graph tab and info tab
+        self.home_tab = None  # Home tab / storytelling
+        self.info_tab = None  # Information showing tab
+        self.graph_tab = None  # Graph showing tab depends on user selection
         self.init_component()
 
     def setup_menubar(self):
@@ -222,17 +224,27 @@ class DiabetesUI(ctk.CTk):
         Load and show the image of BMI standard value information photo.
         """
         for widget in self.info_tab.winfo_children():
-            if not isinstance(widget, ctk.CTkFrame):
+            if widget != self.btn_frame:
+                print(widget)
                 widget.destroy()
-        BMI_image = Image.open('data/information_photos/bmi_info.png')
-        my_BMI_image = ctk.CTkImage(light_image=BMI_image,
-                                    dark_image=BMI_image,
-                                    size=(self.winfo_width(),
-                                          self.winfo_height()))
 
-        BMI_label = ctk.CTkLabel(self.info_tab, image=my_BMI_image, text='',
-                                 bg_color='transparent')
-        BMI_label.pack(fill='both', **OPTIONS, side=ctk.TOP)
+        image_frame = ctk.CTkFrame(self.info_tab)
+        image_frame.pack(side=ctk.TOP, fill='both', **OPTIONS)
+        image = Image.open('data/information_photos/bmi_info.png')
+        image_width, image_height = image.size
+
+        def resize(event=None):
+            new_width = image_frame.winfo_width()
+            new_height = (image_height / image_width) * new_width
+            self.current_image.configure(size=(new_width, new_height))
+
+        self.current_image = ctk.CTkImage(light_image=image, dark_image=image,
+                                          size=image.size)
+        label = ctk.CTkLabel(image_frame, image=self.current_image, text='',
+                             bg_color='transparent')
+        label.pack(side=ctk.TOP)
+
+        self.info_tab.bind('<Configure>', resize)
 
     def graphs_plotting_tab(self):
         """
