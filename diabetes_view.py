@@ -199,7 +199,7 @@ class DiabetesUI(ctk.CTk):
         """
         for widget in self.btn_frame.winfo_children():
             if widget.cget('text') == 'BMI':
-                widget.configure(command=self.show_bmi)
+                widget.configure(command=self.create_image)
             else:
                 widget.configure(command=self.unfinished_information_tab)
 
@@ -216,10 +216,9 @@ class DiabetesUI(ctk.CTk):
                 i.destroy()
         BMI_label = ctk.CTkLabel(self.info_tab, text=sorry_message,
                                  bg_color='transparent', font=my_font)
-        BMI_label.bind('<Button-1>', command=lambda x: print("clicked"))
         BMI_label.pack(fill='both', **OPTIONS)
 
-    def show_bmi(self):
+    def create_image(self):
         """
         Load and show the image of BMI standard value information photo.
         """
@@ -272,6 +271,7 @@ class DiabetesUI(ctk.CTk):
                     widget.configure(command=
                                      lambda name=widget.cget('text'): (
                                          self.model.describe(self,
+                                                             self.graph_tab,
                                                              name)))
 
         combo.configure(command=bind_graph_tab_buttons)
