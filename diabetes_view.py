@@ -217,15 +217,6 @@ class DiabetesUI(ctk.CTk):
         BMI_label.bind('<Button-1>', command=lambda x: print("clicked"))
         BMI_label.pack(fill='both', **OPTIONS)
 
-    def create_pic_label(self):
-        BMI_image = Image.open('data/information_photos/bmi_info.png')
-        my_BMI_image = ctk.CTkImage(light_image=BMI_image,
-                                    dark_image=BMI_image)
-
-        BMI_label = ctk.CTkCanvas(self.info_tab, image=my_BMI_image, text='',
-                                  bg_color='transparent')
-        BMI_label.pack(fill='both', **OPTIONS)
-
     def show_bmi(self):
         """
         Load and show the image of BMI standard value information photo.
