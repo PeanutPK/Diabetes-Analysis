@@ -30,9 +30,6 @@ class DiabetesModel:
             if not isinstance(widget, ctk.CTkTabview):
                 widget.destroy()
 
-        replace = {1: 'Diabetic', 0: 'Not Diabetic'}
-        FILE_CSV['Outcome'] = FILE_CSV['Outcome'].replace(replace)
-
         fig, ax = plt.subplots()
 
         sns.histplot(FILE_CSV, x=name, hue='Outcome', multiple='stack')
@@ -45,18 +42,24 @@ class DiabetesModel:
         canvas.draw()
 
     @staticmethod
-    def describe(master, name: str):
+    def describe(root: ctk.CTk, master: ctk.CTkTabview, name: str):
         """
         Describe all descriptive statistic and dispersion from the csv file.
         :param master:
         :param name:
         """
-        for child in master.winfo_children():
-            if not isinstance(child, ctk.CTkTabview):
-                child.destroy()
+        # Clear outside the tabview
+        for widget in root.winfo_children():
+            if not isinstance(widget, ctk.CTkTabview):
+                widget.destroy()
+
+        # Clear inside the tabview
+        for widget in master.winfo_children():
+            if not isinstance(widget, (ctk.CTkFrame, ctk.CTkComboBox)):
+                widget.destroy()
 
         label = ctk.CTkLabel(master, text=FILE_CSV[name].describe())
-        label.pack(side=ctk.LEFT)
+        label.pack(side=ctk.TOP)
 
     @staticmethod
     def load_storytelling_hist(master: ctk.CTkScrollableFrame):
