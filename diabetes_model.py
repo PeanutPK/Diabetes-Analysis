@@ -26,9 +26,8 @@ class DiabetesModel:
         :param master: Original frame or root.
         :param name: Name of the data to display histogram
         """
-
         for widget in master.winfo_children():
-            if not isinstance(widget, (ctk.CTkTabview, ctk.CTkFrame)):
+            if not isinstance(widget, ctk.CTkTabview):
                 widget.destroy()
 
         replace = {1: 'Diabetic', 0: 'Not Diabetic'}

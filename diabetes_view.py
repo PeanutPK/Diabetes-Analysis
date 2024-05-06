@@ -9,7 +9,7 @@ INTRO_TEXT = ("Introduction\n\n"
               "by National Institute of Diabetes and Digestive and "
               "Kidney Diseases.\n\n")
 
-OPTIONS = {'expand': 'True', 'fill': 'both', 'pady': 5, 'padx': 5}
+OPTIONS = {'expand': 'True', 'pady': 5, 'padx': 5}
 BUTTONS_NAMES = ['BMI', 'BloodPressure', 'Age', 'Glucose']
 
 
@@ -28,9 +28,10 @@ class DiabetesUI(ctk.CTk):
 
         self.tabs = ctk.CTkTabview(self)
         self.current_combo = None
-        self.home_tab = None
-        self.info_tab = None
-        self.graph_tab = None
+        self.btn_frame = None   # Frame for buttons in graph tab and info tab
+        self.home_tab = None    # Home tab / storytelling
+        self.info_tab = None    # Information showing tab
+        self.graph_tab = None   # Graph showing tab depends on user selection
         self.init_component()
 
     def setup_menubar(self):
@@ -64,15 +65,16 @@ class DiabetesUI(ctk.CTk):
             if not isinstance(widget, ctk.CTkTabview):
                 widget.destroy()
 
-    @staticmethod
-    def create_buttons(master):
+    def create_buttons(self, master):
         """
         Initialize buttons for tabs.
         :param master: Root window for buttons.
         """
+        self.btn_frame = ctk.CTkFrame(master)
         for name in BUTTONS_NAMES:
-            btn = ctk.CTkButton(master, text=name)
-            btn.pack(side=ctk.LEFT, anchor='center', **OPTIONS)
+            btn = ctk.CTkButton(self.btn_frame, text=name)
+            btn.pack(side=ctk.LEFT, fill='x', **OPTIONS)
+        self.btn_frame.pack(side=ctk.TOP, fill='x', **OPTIONS, anchor='n')
 
     def storytelling_tab(self):
         """
@@ -82,31 +84,31 @@ class DiabetesUI(ctk.CTk):
         wrap_length = self.winfo_width()
 
         scroll_frame = ctk.CTkScrollableFrame(self.home_tab)
-        scroll_frame.pack(**OPTIONS)
+        scroll_frame.pack(fill='both', **OPTIONS)
 
         textbox = self.create_text_label(scroll_frame, wrap_length,
                                          INTRO_TEXT)
-        textbox.pack(side=ctk.TOP, **OPTIONS)
+        textbox.pack(side=ctk.TOP, fill='both', **OPTIONS)
 
         pie_btn = ctk.CTkButton(scroll_frame, text='Show Ratio Pie Chart')
         pie_btn.bind('<Button-1>', command=self.pie_btn_handler)
-        pie_btn.pack(side=ctk.TOP, **OPTIONS)
+        pie_btn.pack(side=ctk.TOP, fill='both', **OPTIONS)
 
         # Create button for the statistic descriptions popup window
         desc_stat_btn = ctk.CTkButton(scroll_frame,
                                       text='Descriptive Statistic')
         desc_stat_btn.bind('<Button-1>', command=self.desc_stat_btn_handler)
-        desc_stat_btn.pack(side=ctk.TOP, **OPTIONS)
+        desc_stat_btn.pack(side=ctk.TOP, fill='both', **OPTIONS)
 
         # Create button for the histograms popup window
         hist_btn = ctk.CTkButton(scroll_frame, text='Histogram')
         hist_btn.bind('<Button-1>', command=self.hist_btn_handler)
-        hist_btn.pack(side=ctk.TOP, **OPTIONS)
+        hist_btn.pack(side=ctk.TOP, fill='both', **OPTIONS)
 
         # Create button for scatter plots with a correlations popup window
         hist_btn = ctk.CTkButton(scroll_frame, text='Correlation')
         hist_btn.bind('<Button-1>', command=self.corr_btn_handler)
-        hist_btn.pack(side=ctk.TOP, **OPTIONS)
+        hist_btn.pack(side=ctk.TOP, fill='both', **OPTIONS)
 
     def pie_btn_handler(self, event=None):
         """
@@ -119,7 +121,7 @@ class DiabetesUI(ctk.CTk):
             storytelling.attributes('-topmost', True)
 
             scrollable = ctk.CTkScrollableFrame(storytelling)
-            scrollable.pack(**OPTIONS)
+            scrollable.pack(fill='both', **OPTIONS)
             self.model.load_pie_chart(scrollable)
             self.toplevel = storytelling
         else:
@@ -136,7 +138,7 @@ class DiabetesUI(ctk.CTk):
             storytelling.attributes('-topmost', True)
 
             scrollable = ctk.CTkScrollableFrame(storytelling)
-            scrollable.pack(**OPTIONS)
+            scrollable.pack(fill='both', **OPTIONS)
             self.model.load_storytelling_stat(scrollable)
             self.toplevel = storytelling
         else:
@@ -153,7 +155,7 @@ class DiabetesUI(ctk.CTk):
             storytelling.attributes('-topmost', True)
 
             scrollable = ctk.CTkScrollableFrame(storytelling)
-            scrollable.pack(**OPTIONS)
+            scrollable.pack(fill='both', **OPTIONS)
             self.model.load_storytelling_hist(scrollable)
             self.toplevel = storytelling
         else:
@@ -170,7 +172,7 @@ class DiabetesUI(ctk.CTk):
             storytelling.attributes('-topmost', True)
 
             scrollable = ctk.CTkScrollableFrame(storytelling)
-            scrollable.pack(**OPTIONS)
+            scrollable.pack(fill='both', **OPTIONS)
             self.model.load_storytelling_corr(scrollable)
             self.toplevel = storytelling
         else:
@@ -193,12 +195,11 @@ class DiabetesUI(ctk.CTk):
         """
         Bind buttons for information tab.
         """
-        for widget in self.info_tab.winfo_children():
-            if isinstance(widget, ctk.CTkButton):
-                if widget.cget('text') == 'BMI':
-                    widget.configure(command=self.show_bmi)
-                else:
-                    widget.configure(command=self.unfinished_information_tab)
+        for widget in self.btn_frame.winfo_children():
+            if widget.cget('text') == 'BMI':
+                widget.configure(command=self.show_bmi)
+            else:
+                widget.configure(command=self.unfinished_information_tab)
 
     def unfinished_information_tab(self):
         """
@@ -209,29 +210,39 @@ class DiabetesUI(ctk.CTk):
                          'please wait until the next update.')
         my_font = ctk.CTkFont(family='<Calibri>', size=25, weight='bold')
         for i in self.info_tab.winfo_children():
-            i.destroy()
+            if not isinstance(i, ctk.CTkFrame):
+                i.destroy()
         self.back_button(self.info_tab)
         BMI_label = ctk.CTkLabel(self.info_tab, text=sorry_message,
                                  bg_color='transparent', font=my_font)
         BMI_label.bind('<Button-1>', command=lambda x: print("clicked"))
-        BMI_label.pack(**OPTIONS)
+        BMI_label.pack(fill='both', **OPTIONS)
+
+    def create_pic_label(self):
+        BMI_image = Image.open('data/information_photos/bmi_info.png')
+        my_BMI_image = ctk.CTkImage(light_image=BMI_image,
+                                    dark_image=BMI_image)
+
+        BMI_label = ctk.CTkCanvas(self.info_tab, image=my_BMI_image, text='',
+                                  bg_color='transparent')
+        BMI_label.pack(fill='both', **OPTIONS)
 
     def show_bmi(self):
         """
         Load and show the image of BMI standard value information photo.
         """
-        for i in self.info_tab.winfo_children():
-            i.destroy()
-        self.back_button(self.info_tab)
+        for widget in self.info_tab.winfo_children():
+            if not isinstance(widget, ctk.CTkFrame):
+                widget.destroy()
         BMI_image = Image.open('data/information_photos/bmi_info.png')
         my_BMI_image = ctk.CTkImage(light_image=BMI_image,
                                     dark_image=BMI_image,
-                                    size=(600, 315))
+                                    size=(self.winfo_width(),
+                                          self.winfo_height()))
 
         BMI_label = ctk.CTkLabel(self.info_tab, image=my_BMI_image, text='',
                                  bg_color='transparent')
-        BMI_label.bind('<Button-1>', command=lambda x: print("clicked"))
-        BMI_label.pack(**OPTIONS)
+        BMI_label.pack(fill='both', **OPTIONS, side=ctk.TOP)
 
     def graphs_plotting_tab(self):
         """
@@ -247,27 +258,22 @@ class DiabetesUI(ctk.CTk):
         combo.pack(side=ctk.TOP)
         self.create_buttons(self.graph_tab)
 
-        def bind_buttons(event=None):
+        def bind_graph_tab_buttons(event=None):
             """Bind buttons when the combo box changes the function."""
-            for widget in self.winfo_children():
-                if not isinstance(widget, ctk.CTkTabview):
-                    widget.destroy()
+            for widget in self.btn_frame.winfo_children():
+                if combo.get() == 'Histogram':
+                    widget.configure(command=
+                                     lambda name=widget.cget('text'): (
+                                         self.model.load_graph(self,
+                                                               name)))
+                elif combo.get() == 'Statistic':
+                    widget.configure(command=
+                                     lambda name=widget.cget('text'): (
+                                         self.model.describe(self,
+                                                             name)))
 
-            for widget in self.graph_tab.winfo_children():
-                if isinstance(widget, ctk.CTkButton):
-                    if combo.get() == 'Histogram':
-                        widget.configure(command=
-                                         lambda name=widget.cget('text'): (
-                                             self.model.load_graph(self,
-                                                                   name)))
-                    elif combo.get() == 'Statistic':
-                        widget.configure(command=
-                                         lambda name=widget.cget('text'): (
-                                             self.model.describe(self,
-                                                                 name)))
-
-        combo.configure(command=bind_buttons)
-        bind_buttons()
+        combo.configure(command=bind_graph_tab_buttons)
+        bind_graph_tab_buttons()
 
     def back_button(self, master):
         """
