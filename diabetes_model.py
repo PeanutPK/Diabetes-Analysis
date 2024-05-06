@@ -41,7 +41,7 @@ class DiabetesModel:
 
         plt.title('Diabetes Outcome for ' + name)
         canvas = FigureCanvasTkAgg(fig, master=master)
-        canvas.get_tk_widget().pack(side=ctk.LEFT)
+        canvas.get_tk_widget().pack(side=ctk.TOP, fill='both', expand=True)
         canvas.draw()
 
     @staticmethod

@@ -57,7 +57,7 @@ class DiabetesUI(ctk.CTk):
         self.information_tab()
         self.graphs_plotting_tab()
         self.tabs.configure(command=self.tab_changes_handler)
-        self.tabs.pack(pady=10, expand=True, fill='both', side=ctk.LEFT)
+        self.tabs.pack(pady=10, expand=True, fill='both', side=ctk.TOP)
 
     def tab_changes_handler(self):
         """For clearing others widget, that is not TabView widget."""
@@ -212,7 +212,6 @@ class DiabetesUI(ctk.CTk):
         for i in self.info_tab.winfo_children():
             if not isinstance(i, ctk.CTkFrame):
                 i.destroy()
-        self.back_button(self.info_tab)
         BMI_label = ctk.CTkLabel(self.info_tab, text=sorry_message,
                                  bg_color='transparent', font=my_font)
         BMI_label.bind('<Button-1>', command=lambda x: print("clicked"))
@@ -275,27 +274,6 @@ class DiabetesUI(ctk.CTk):
         combo.configure(command=bind_graph_tab_buttons)
         bind_graph_tab_buttons()
 
-    def back_button(self, master):
-        """
-        Button that returns to the previous page.
-        :param master: Root of the window before going to another page
-        :return:
-        """
-        button = ctk.CTkButton(master, text='go back',
-                               command=lambda: self.goback(master))
-        button.pack(side=ctk.TOP)
-
-    def goback(self, master: ctk.CTkFrame):
-        """
-        A back button handle to return to the master frame.
-        :param master: Origin frame.
-        """
-        for widget in master.winfo_children():
-            widget.destroy()
-        self.create_buttons(master)
-        if master == self.info_tab:
-            self.information_buttons_binding()
-
     def run(self):
         """
         Set up the menu bars and loop the main window.
@@ -305,6 +283,29 @@ class DiabetesUI(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.quit)
         self.setup_menubar()
         self.mainloop()
+
+    def unused(self):
+
+        def back_button(self, master):
+            """
+            Button that returns to the previous page.
+            :param master: Root of the window before going to another page
+            :return:
+            """
+            button = ctk.CTkButton(master, text='go back',
+                                   command=lambda: self.goback(master))
+            button.pack(side=ctk.TOP)
+
+        def goback(self, master: ctk.CTkFrame):
+            """
+            A back button handle to return to the master frame.
+            :param master: Origin frame.
+            """
+            for widget in master.winfo_children():
+                widget.destroy()
+            self.create_buttons(master)
+            if master == self.info_tab:
+                self.information_buttons_binding()
 
 
 if __name__ == '__main__':
