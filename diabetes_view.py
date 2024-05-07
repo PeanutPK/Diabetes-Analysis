@@ -11,6 +11,7 @@ INTRO_TEXT = ("Introduction\n\n"
 
 OPTIONS = {'expand': 'True', 'pady': 5, 'padx': 5}
 BUTTONS_NAMES = ['BMI', 'BloodPressure', 'Age', 'Glucose']
+IMPORTANT_WIDGET = (ctk.CTkTabview, Menu, ctk.CTkButton)
 
 
 class DiabetesUI(ctk.CTk):
@@ -28,6 +29,7 @@ class DiabetesUI(ctk.CTk):
 
         self.current_image = None  # current image in the information tab
         self.current_combo = None  # current selected combobox
+        self.image = None
 
         self.tabs = ctk.CTkTabview(self)
         self.btn_frame = None  # Frame for buttons in graph tab and info tab
@@ -64,7 +66,7 @@ class DiabetesUI(ctk.CTk):
     def tab_changes_handler(self):
         """For clearing others widget, that is not TabView widget."""
         for widget in self.winfo_children():
-            if not isinstance(widget, ctk.CTkTabview):
+            if not isinstance(widget, IMPORTANT_WIDGET):
                 widget.destroy()
 
     def create_buttons(self, master):
@@ -198,38 +200,25 @@ class DiabetesUI(ctk.CTk):
         Bind buttons for information tab.
         """
         for widget in self.btn_frame.winfo_children():
-            if widget.cget('text') == 'BMI':
-                widget.configure(command=self.create_image)
-            else:
-                widget.configure(command=self.unfinished_information_tab)
+            widget.configure(command=lambda name=widget.cget('text'):
+                             self.create_image(name))
 
-    def unfinished_information_tab(self):
+    def create_image(self, name: str):
         """
-        Display an unfinished message for user to wait for further development.
+        Create an image frame for showing selected button information.
         """
-        sorry_message = ('Sorry for your inconvenience.\n'
-                         'This page is under construction '
-                         'please wait until the next update.')
-        my_font = ctk.CTkFont(family='<Calibri>', size=25, weight='bold')
-        for i in self.info_tab.winfo_children():
-            if not isinstance(i, ctk.CTkFrame):
-                i.destroy()
-        BMI_label = ctk.CTkLabel(self.info_tab, text=sorry_message,
-                                 bg_color='transparent', font=my_font)
-        BMI_label.pack(fill='both', **OPTIONS)
+        try:    # Handle existed image frame to clear the previous image.
+            image_frame = self.info_tab.winfo_children()[1]
+            for image in image_frame.winfo_children():
+                image.destroy()
+        except IndexError:
+            image_frame = ctk.CTkFrame(self.info_tab)
+            image_frame.pack(side=ctk.TOP, fill='both', **OPTIONS)
 
-    def create_image(self):
-        """
-        Load and show the image of BMI standard value information photo.
-        """
-        for widget in self.info_tab.winfo_children():
-            if widget != self.btn_frame:
-                print(widget)
-                widget.destroy()
-
-        image_frame = ctk.CTkFrame(self.info_tab)
-        image_frame.pack(side=ctk.TOP, fill='both', **OPTIONS)
-        image = Image.open('data/information_photos/bmi_info.png')
+        try:    # Handle missing information
+            image = Image.open(f'data/information_photos/{name}_info.png')
+        except FileNotFoundError:
+            image = Image.open('data/information_photos/image-not-found.png')
         image_width, image_height = image.size
 
         def resize(event=None):
@@ -237,7 +226,8 @@ class DiabetesUI(ctk.CTk):
             new_height = (image_height / image_width) * new_width
             self.current_image.configure(size=(new_width, new_height))
 
-        self.current_image = ctk.CTkImage(light_image=image, dark_image=image,
+        self.current_image = ctk.CTkImage(light_image=image,
+                                          dark_image=image,
                                           size=image.size)
         label = ctk.CTkLabel(image_frame, image=self.current_image, text='',
                              bg_color='transparent')
@@ -287,30 +277,3 @@ class DiabetesUI(ctk.CTk):
         self.setup_menubar()
         self.mainloop()
 
-    def unused(self):
-
-        def back_button(self, master):
-            """
-            Button that returns to the previous page.
-            :param master: Root of the window before going to another page
-            :return:
-            """
-            button = ctk.CTkButton(master, text='go back',
-                                   command=lambda: self.goback(master))
-            button.pack(side=ctk.TOP)
-
-        def goback(self, master: ctk.CTkFrame):
-            """
-            A back button handle to return to the master frame.
-            :param master: Origin frame.
-            """
-            for widget in master.winfo_children():
-                widget.destroy()
-            self.create_buttons(master)
-            if master == self.info_tab:
-                self.information_buttons_binding()
-
-
-if __name__ == '__main__':
-    test_ui = DiabetesUI()
-    test_ui.run()

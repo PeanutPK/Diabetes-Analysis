@@ -13,7 +13,7 @@ FILE_CSV = pd.read_csv('data/diabetes.csv')
 REPLACE = {1: 'Diabetic', 0: 'Not Diabetic'}
 FILE_CSV['Outcome'] = FILE_CSV['Outcome'].replace(REPLACE)
 NAMES = ['BMI', 'BloodPressure', 'Age', 'Glucose']
-IMPORTANT_WIDGET = [ctk.CTkTabview, Menu]
+IMPORTANT_WIDGET = (ctk.CTkTabview, Menu)
 
 
 class DiabetesModel:
