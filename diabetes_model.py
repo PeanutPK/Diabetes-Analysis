@@ -13,7 +13,6 @@ FILE_CSV = pd.read_csv('data/diabetes.csv')
 REPLACE = {1: 'Diabetic', 0: 'Not Diabetic'}
 FILE_CSV['Outcome'] = FILE_CSV['Outcome'].replace(REPLACE)
 NAMES = ['BMI', 'BloodPressure', 'Age', 'Glucose']
-IMPORTANT_WIDGET = (ctk.CTkTabview, Menu)
 
 
 class DiabetesModel:
@@ -28,9 +27,13 @@ class DiabetesModel:
         :param master: Original frame or root.
         :param name: Name of the data to display histogram
         """
-        for widget in master.winfo_children():
-            if not isinstance(widget, IMPORTANT_WIDGET):
-                widget.destroy()
+        try:
+            widget = master.winfo_children()[2]
+            widget.destroy()
+        except IndexError:
+            pass
+
+        graph_frame = ctk.CTkFrame(master)
 
         fig, ax = plt.subplots()
 
@@ -39,29 +42,26 @@ class DiabetesModel:
         ax.set(xlabel='', ylabel='Frequency')
 
         plt.title('Diabetes Outcome for ' + name)
-        canvas = FigureCanvasTkAgg(fig, master=master)
+        canvas = FigureCanvasTkAgg(fig, master=graph_frame)
         canvas.get_tk_widget().pack(side=ctk.TOP, fill='both', expand=True)
         canvas.draw()
+        graph_frame.pack(side=ctk.TOP, expand=True, fill='both')
 
     @staticmethod
-    def describe(root: ctk.CTk, master: ctk.CTkTabview, name: str):
+    def describe(master: ctk.CTkTabview, name: str):
         """
-        Describe all descriptive statistic and dispersion from the csv file.
-        :param master:
-        :param name:
+        Describe all descriptive statistics and dispersion from the csv file.
+        :param master: Frame or Tab for packing the item inside.
+        :param name: Name of the attribute to pull information from.
         """
-        # Clear outside the tabview
-        for widget in root.winfo_children():
-            if not isinstance(widget, IMPORTANT_WIDGET):
-                widget.destroy()
-
-        # Clear inside the tabview
-        for widget in master.winfo_children():
-            if not isinstance(widget, (ctk.CTkFrame, ctk.CTkComboBox)):
-                widget.destroy()
+        try:
+            widget = master.winfo_children()[2]
+            widget.destroy()
+        except IndexError:
+            pass
 
         label = ctk.CTkLabel(master, text=FILE_CSV[name].describe())
-        label.pack(side=ctk.TOP)
+        label.pack(side=ctk.TOP, expand=True, fill='both', anchor='n')
 
     @staticmethod
     def load_storytelling_hist(master: ctk.CTkScrollableFrame):
@@ -125,6 +125,10 @@ class DiabetesModel:
 
         canvas.draw()
 
+    @staticmethod
+    def load_bar_graph_bmi(master):
+        pass
+
 
 if __name__ == '__main__':
     root = ctk.CTk()
@@ -139,5 +143,7 @@ if __name__ == '__main__':
     # DiabetesModel().load_storytelling_stat(scrollable)
     # DiabetesModel().load_storytelling_corr(scrollable)
     # DiabetesModel().load_pie_chart(scrollable)
+
+    DiabetesModel().load_bar_graph_bmi()
 
     root.mainloop()

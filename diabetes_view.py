@@ -78,7 +78,7 @@ class DiabetesUI(ctk.CTk):
         for name in BUTTONS_NAMES:
             btn = ctk.CTkButton(self.btn_frame, text=name)
             btn.pack(side=ctk.LEFT, fill='x', **OPTIONS)
-        self.btn_frame.pack(side=ctk.TOP, fill='x', **OPTIONS, anchor='n')
+        self.btn_frame.pack(side=ctk.TOP, fill='x', **OPTIONS)
 
     def storytelling_tab(self):
         """
@@ -184,6 +184,7 @@ class DiabetesUI(ctk.CTk):
 
     @staticmethod
     def create_text_label(master, length, text):
+        """Text label for """
         return ctk.CTkLabel(master, justify='left', wraplength=length,
                             text=text)
 
@@ -255,13 +256,12 @@ class DiabetesUI(ctk.CTk):
                 if combo.get() == 'Histogram':
                     widget.configure(command=
                                      lambda name=widget.cget('text'): (
-                                         self.model.load_graph(self,
+                                         self.model.load_graph(self.graph_tab,
                                                                name)))
                 elif combo.get() == 'Statistic':
                     widget.configure(command=
                                      lambda name=widget.cget('text'): (
-                                         self.model.describe(self,
-                                                             self.graph_tab,
+                                         self.model.describe(self.graph_tab,
                                                              name)))
 
         combo.configure(command=bind_graph_tab_buttons)
