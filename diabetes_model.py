@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import customtkinter as ctk
+from tkinter import Menu
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 sns.set_theme(rc={'figure.figsize': (3, 3)})
@@ -12,6 +13,7 @@ FILE_CSV = pd.read_csv('data/diabetes.csv')
 REPLACE = {1: 'Diabetic', 0: 'Not Diabetic'}
 FILE_CSV['Outcome'] = FILE_CSV['Outcome'].replace(REPLACE)
 NAMES = ['BMI', 'BloodPressure', 'Age', 'Glucose']
+IMPORTANT_WIDGET = [ctk.CTkTabview, Menu]
 
 
 class DiabetesModel:
@@ -27,7 +29,7 @@ class DiabetesModel:
         :param name: Name of the data to display histogram
         """
         for widget in master.winfo_children():
-            if not isinstance(widget, ctk.CTkTabview):
+            if not isinstance(widget, IMPORTANT_WIDGET):
                 widget.destroy()
 
         fig, ax = plt.subplots()
@@ -50,7 +52,7 @@ class DiabetesModel:
         """
         # Clear outside the tabview
         for widget in root.winfo_children():
-            if not isinstance(widget, ctk.CTkTabview):
+            if not isinstance(widget, IMPORTANT_WIDGET):
                 widget.destroy()
 
         # Clear inside the tabview
