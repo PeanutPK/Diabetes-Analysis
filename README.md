@@ -4,6 +4,16 @@ A visualization program designed to help users check their risk levels for
 diabetes. This tool can provide valuable insights into potential health risks
 and assist users in making informed decisions about their well-being.
 
+## Resource
+This project uses dataset from [kaggle.com](https://www.kaggle.com/datasets/akshaydattatraykhare/diabetes-dataset/data)
+
+Information table image sources
+[BMI](https://www.kreedon.com/what-is-bmi-body-mass-index-calculate-bmi/),
+[Blood pressure](https://www.heart.org/en/health-topics/high-blood-pressure/understanding-blood-pressure-readings),
+[Age](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.researchgate.net%2Ffigure%2FAge-intervals-and-age-groups_tbl1_228404297&psig=AOvVaw3OkQXMJjInrDlRpMVaMnzg&ust=1715171432250000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCOirrNHF-4UDFQAAAAAdAAAAABAx),
+and
+[Glucose](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.breathewellbeing.in%2Fblog%2Fchart-of-normal-blood-sugar-levels-for-adults-with-diabetes%2F&psig=AOvVaw1KA7FeBxHNuOHrIE0pD0hM&ust=1715172721579000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJiUmrvK-4UDFQAAAAAdAAAAABBi)
+
 ## Installation and How to run
 
 ### Installation
