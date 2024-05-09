@@ -28,7 +28,6 @@ class DiabetesUI(ctk.CTk):
         self.toplevel = None
 
         self.current_image = None  # current image in the information tab
-        self.current_combo = None  # current selected combobox
         self.image = None
 
         self.tabs = ctk.CTkTabview(self)
@@ -226,7 +225,7 @@ class DiabetesUI(ctk.CTk):
         """
         for widget in self.btn_frame.winfo_children():
             widget.configure(command=lambda name=widget.cget('text'):
-            self.create_image(name))
+                             self.create_image(name))
 
     def create_image(self, name: str):
         """
@@ -270,7 +269,6 @@ class DiabetesUI(ctk.CTk):
         combo = ctk.CTkComboBox(self.stat_graph_tab, state='readonly',
                                 values=['Histogram', 'Statistic'])
         combo.set('Histogram')
-        self.current_combo = lambda: combo.get()
         combo.pack(side=ctk.TOP)
         self.create_buttons(self.stat_graph_tab)
 
@@ -298,8 +296,6 @@ class DiabetesUI(ctk.CTk):
         graph_choice.set('Histogram')
         graph_choice.pack(side=ctk.TOP)
 
-        self.current_combo = lambda: graph_choice.get()
-
         first_attribute = ctk.StringVar()
         second_attribute = ctk.StringVar()
 
@@ -312,7 +308,7 @@ class DiabetesUI(ctk.CTk):
                                      values=self.model.get_column())
 
         y_label = ctk.CTkLabel(combo_frame, text='Y-axis')
-        y_combobox = ctk.CTkComboBox(combo_frame, state='disable',
+        y_combobox = ctk.CTkComboBox(combo_frame, state='disabled',
                                      variable=second_attribute,
                                      values=self.model.get_column())
 
@@ -323,6 +319,14 @@ class DiabetesUI(ctk.CTk):
         y_combobox.grid(row=1, column=2, sticky=ctk.NE)
         for i in range(3):
             combo_frame.columnconfigure(i, weight=1)
+
+        def set_type(event=None):
+            if graph_choice.get() == 'Scatterplot':
+                y_combobox.configure(state='readonly')
+            else:
+                y_combobox.configure(state='disabled')
+
+        combo_frame.bind(command=set_type)
 
     def run(self):
         """
