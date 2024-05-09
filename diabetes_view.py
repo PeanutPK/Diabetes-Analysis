@@ -50,6 +50,19 @@ class DiabetesUI(ctk.CTk):
         menubar.add_cascade(label="Exit menu", menu=exit_menu)
         exit_menu.add_command(label='Exit', command=self.destroy)
 
+        # setup appearance changing menu
+        appearance_menu = Menu(menubar, tearoff=0)
+        menubar.add_cascade(label='Appearance Mode', menu=appearance_menu)
+        appearance_menu.add_command(label='System Default',
+                                    command=lambda:
+                                    ctk.set_appearance_mode("system"))
+        appearance_menu.add_command(label='Dark Mode',
+                                    command=lambda:
+                                    ctk.set_appearance_mode("dark"))
+        appearance_menu.add_command(label='Light Mode',
+                                    command=lambda:
+                                    ctk.set_appearance_mode("light"))
+
         self.config(menu=menubar)
 
     def init_component(self):
@@ -326,7 +339,7 @@ class DiabetesUI(ctk.CTk):
             else:
                 y_combobox.configure(state='disabled')
 
-        combo_frame.bind(command=set_type)
+        graph_choice.configure(command=set_type)
 
     def run(self):
         """
