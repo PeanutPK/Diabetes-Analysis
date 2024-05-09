@@ -35,7 +35,8 @@ class DiabetesUI(ctk.CTk):
         self.btn_frame = None  # Frame for buttons in graph tab and info tab
         self.home_tab = None  # Home tab / storytelling
         self.info_tab = None  # Information showing tab
-        self.graph_tab = None  # Graph showing tab depends on user selection
+        self.stat_graph_tab = None  # Important statistic and graph tab
+        self.any_graph_tab = None  # Showing graph depending on user choice
         self.init_component()
 
     def setup_menubar(self):
@@ -59,6 +60,7 @@ class DiabetesUI(ctk.CTk):
         self.tabs = ctk.CTkTabview(self)
         self.storytelling_tab()
         self.information_tab()
+        self.stat_and_graph_tab()
         self.graphs_plotting_tab()
         self.tabs.configure(command=self.tab_changes_handler)
         self.tabs.pack(pady=10, expand=True, fill='both', side=ctk.TOP)
@@ -110,9 +112,14 @@ class DiabetesUI(ctk.CTk):
         hist_btn.pack(side=ctk.TOP, fill='both', **OPTIONS)
 
         # Create button for scatter plots with a correlations popup window
-        hist_btn = ctk.CTkButton(scroll_frame, text='Correlation')
-        hist_btn.bind('<Button-1>', command=self.corr_btn_handler)
-        hist_btn.pack(side=ctk.TOP, fill='both', **OPTIONS)
+        corr_btn = ctk.CTkButton(scroll_frame, text='Correlation')
+        corr_btn.bind('<Button-1>', command=self.corr_btn_handler)
+        corr_btn.pack(side=ctk.TOP, fill='both', **OPTIONS)
+
+        # Create button for the histograms popup window
+        bmi_btn = ctk.CTkButton(scroll_frame, text='BMI Range Histogram')
+        bmi_btn.bind('<Button-1>', command=self.bmi_range_btn_handler)
+        bmi_btn.pack(side=ctk.TOP, fill='both', **OPTIONS)
 
     def pie_btn_handler(self, event=None):
         """
@@ -182,6 +189,23 @@ class DiabetesUI(ctk.CTk):
         else:
             self.toplevel.focus()
 
+    def bmi_range_btn_handler(self, event=None):
+        """
+        Handler for histogram button to show histograms.
+        :param event: Widget event handler that usually set as none.
+        """
+        if self.toplevel is None or not self.toplevel.winfo_exists():
+            storytelling = ctk.CTkToplevel()
+            storytelling.title('BMI Standard Range')
+            storytelling.attributes('-topmost', True)
+
+            frame = ctk.CTkFrame(storytelling)
+            frame.pack(fill='both', **OPTIONS)
+            self.model.load_bar_graph_bmi(frame)
+            self.toplevel = storytelling
+        else:
+            self.toplevel.focus()
+
     @staticmethod
     def create_text_label(master, length, text):
         """Text label for """
@@ -202,13 +226,13 @@ class DiabetesUI(ctk.CTk):
         """
         for widget in self.btn_frame.winfo_children():
             widget.configure(command=lambda name=widget.cget('text'):
-                             self.create_image(name))
+            self.create_image(name))
 
     def create_image(self, name: str):
         """
         Create an image frame for showing selected button information.
         """
-        try:    # Handle existed image frame to clear the previous image.
+        try:  # Handle existed image frame to clear the previous image.
             image_frame = self.info_tab.winfo_children()[1]
             for image in image_frame.winfo_children():
                 image.destroy()
@@ -216,7 +240,7 @@ class DiabetesUI(ctk.CTk):
             image_frame = ctk.CTkFrame(self.info_tab)
             image_frame.pack(side=ctk.TOP, fill='both', **OPTIONS)
 
-        try:    # Handle missing information
+        try:  # Handle missing information
             image = Image.open(f'data/information_photos/{name}_info.png')
         except FileNotFoundError:
             image = Image.open('data/information_photos/image-not-found.png')
@@ -236,19 +260,19 @@ class DiabetesUI(ctk.CTk):
 
         self.info_tab.bind('<Configure>', resize)
 
-    def graphs_plotting_tab(self):
+    def stat_and_graph_tab(self):
         """
         This tab let the user pick a graph from the provided button choosing
         between statistical data or histogram graph.
         In the future, there will be more types of graphs.
         """
-        self.graph_tab = self.tabs.add('Graphs')
-        combo = ctk.CTkComboBox(self.graph_tab, state='readonly',
+        self.stat_graph_tab = self.tabs.add('Graphs')
+        combo = ctk.CTkComboBox(self.stat_graph_tab, state='readonly',
                                 values=['Histogram', 'Statistic'])
         combo.set('Histogram')
         self.current_combo = lambda: combo.get()
         combo.pack(side=ctk.TOP)
-        self.create_buttons(self.graph_tab)
+        self.create_buttons(self.stat_graph_tab)
 
         def bind_graph_tab_buttons(event=None):
             """Bind buttons when the combo box changes the function."""
@@ -256,16 +280,49 @@ class DiabetesUI(ctk.CTk):
                 if combo.get() == 'Histogram':
                     widget.configure(command=
                                      lambda name=widget.cget('text'): (
-                                         self.model.load_graph(self.graph_tab,
-                                                               name)))
+                                         self.model.load_graph_outcome(
+                                             self.stat_graph_tab, name)))
                 elif combo.get() == 'Statistic':
                     widget.configure(command=
                                      lambda name=widget.cget('text'): (
-                                         self.model.describe(self.graph_tab,
-                                                             name)))
+                                         self.model.describe(
+                                             self.stat_graph_tab, name)))
 
         combo.configure(command=bind_graph_tab_buttons)
         bind_graph_tab_buttons()
+
+    def graphs_plotting_tab(self):
+        self.any_graph_tab = self.tabs.add('Free Style')
+        graph_choice = ctk.CTkComboBox(self.any_graph_tab, state='readonly',
+                                       values=['Histogram', 'Scatterplot'])
+        graph_choice.set('Histogram')
+        graph_choice.pack(side=ctk.TOP)
+
+        self.current_combo = lambda: graph_choice.get()
+
+        first_attribute = ctk.StringVar()
+        second_attribute = ctk.StringVar()
+
+        combo_frame = ctk.CTkFrame(self.any_graph_tab)
+        combo_frame.pack(side=ctk.TOP, **OPTIONS, fill='both')
+
+        x_label = ctk.CTkLabel(combo_frame, text='X-axis')
+        x_combobox = ctk.CTkComboBox(combo_frame, state='readonly',
+                                     variable=first_attribute,
+                                     values=self.model.get_column())
+
+        y_label = ctk.CTkLabel(combo_frame, text='Y-axis')
+        y_combobox = ctk.CTkComboBox(combo_frame, state='disable',
+                                     variable=second_attribute,
+                                     values=self.model.get_column())
+
+        x_label.grid(row=0, column=0, sticky=ctk.NW)
+        y_label.grid(row=0, column=2, sticky=ctk.NE)
+
+        x_combobox.grid(row=1, column=0, sticky=ctk.NW)
+        y_combobox.grid(row=1, column=2, sticky=ctk.NE)
+        for i in range(3):
+            combo_frame.columnconfigure(i, weight=1)
 
     def run(self):
         """
@@ -276,4 +333,3 @@ class DiabetesUI(ctk.CTk):
         self.protocol("WM_DELETE_WINDOW", self.quit)
         self.setup_menubar()
         self.mainloop()
-
