@@ -6,22 +6,45 @@ import customtkinter as ctk
 from tkinter import Menu
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-sns.set_theme(rc={'figure.figsize': (3, 3)})
-plt.rcParams['figure.figsize'] = [3, 3]
-
-FILE_CSV = pd.read_csv('data/diabetes.csv')
-REPLACE = {1: 'Diabetic', 0: 'Not Diabetic'}
-FILE_CSV['Outcome'] = FILE_CSV['Outcome'].replace(REPLACE)
 NAMES = ['BMI', 'BloodPressure', 'Age', 'Glucose']
 
 
-class DiabetesModel:
+class Data:
+    def __init__(self):
+        # Initialize graph and data
+        sns.set_theme(rc={'figure.figsize': (3, 3)})
+        plt.rcParams['figure.figsize'] = [3, 3]
+        REPLACE = {1: 'Diabetic', 0: 'Not Diabetic'}
+
+        self.df = pd.read_csv('data/diabetes.csv')
+        self.df['Outcome'] = self.df['Outcome'].replace(REPLACE)
+
+    def get_column(self):
+        return list(self.df.columns)
+
+    @staticmethod
+    def bar_filter(x):
+        if x < 18:
+            return 'Underweight'
+        if 18 <= x <= 24:
+            return 'Normal'
+        if x > 25:
+            return 'Obese'
+    
+    def get_bmi_range(self):
+        new_df = self.df.copy()
+        new_df['RangeBMI'] = self.df['BMI'].apply(self.bar_filter)
+        return new_df
+
+
+class DiabetesModel(Data):
     """
     Module for computing and sometimes draw a graph (when the pattern is done)
     """
+    def __init__(self):
+        super().__init__()
 
-    @staticmethod
-    def load_graph(master: ctk.CTk, name: str):
+    def load_graph_outcome(self, master: ctk.CTk, name: str):
         """
         Load a graph from the input name and pack it to the origin root.
         :param master: Original frame or root.
@@ -37,7 +60,7 @@ class DiabetesModel:
 
         fig, ax = plt.subplots()
 
-        sns.histplot(FILE_CSV, x=name, hue='Outcome', multiple='stack')
+        sns.histplot(self.df, x=name, hue='Outcome', multiple='stack')
 
         ax.set(xlabel='', ylabel='Frequency')
 
@@ -47,8 +70,7 @@ class DiabetesModel:
         canvas.draw()
         graph_frame.pack(side=ctk.TOP, expand=True, fill='both')
 
-    @staticmethod
-    def describe(master: ctk.CTkTabview, name: str):
+    def describe(self, master: ctk.CTkTabview, name: str):
         """
         Describe all descriptive statistics and dispersion from the csv file.
         :param master: Frame or Tab for packing the item inside.
@@ -60,16 +82,15 @@ class DiabetesModel:
         except IndexError:
             pass
 
-        label = ctk.CTkLabel(master, text=FILE_CSV[name].describe())
+        label = ctk.CTkLabel(master, text=self.df[name].describe())
         label.pack(side=ctk.TOP, expand=True, fill='both', anchor='n')
 
-    @staticmethod
-    def load_storytelling_hist(master: ctk.CTkScrollableFrame):
+    def load_storytelling_hist(self, master: ctk.CTkScrollableFrame):
         """Load all histograms only for storytelling page"""
         for name in NAMES:
             fig, ax = plt.subplots()
 
-            sns.histplot(FILE_CSV, x=name, hue='Outcome',
+            sns.histplot(self.df, x=name, hue='Outcome',
                          multiple='stack')
 
             ax.set(ylabel='Frequency')
@@ -79,22 +100,20 @@ class DiabetesModel:
             canvas.get_tk_widget().pack(side=ctk.TOP, expand=True, fill='both')
             canvas.draw()
 
-    @staticmethod
-    def load_storytelling_stat(master):
+    def load_storytelling_stat(self, master):
 
         for name in NAMES:
             label = ctk.CTkLabel(master,
-                                 text=f"{FILE_CSV[name].describe()}\n")
+                                 text=f"{self.df[name].describe()}\n")
             label.pack(side=ctk.TOP)
 
-    @staticmethod
-    def load_correlations_scatter(master, x, y):
+    def load_correlations_scatter(self, master, x, y):
 
         fig, ax = plt.subplots()
 
-        coefficient = np.corrcoef(FILE_CSV[x], FILE_CSV[y])[0, 1]
+        coefficient = np.corrcoef(self.df[x], self.df[y])[0, 1]
 
-        sns.scatterplot(FILE_CSV, x=x, y=y, hue='Outcome')
+        sns.scatterplot(self.df, x=x, y=y, hue='Outcome')
 
         ax.set(xlabel=x, ylabel=y)
 
@@ -111,10 +130,9 @@ class DiabetesModel:
         self.load_correlations_scatter(master, 'Glucose', 'Insulin')
         self.load_correlations_scatter(master, 'Glucose', 'BMI')
 
-    @staticmethod
-    def load_pie_chart(master):
+    def load_pie_chart(self, master):
 
-        diabetics = FILE_CSV['Outcome'].value_counts()
+        diabetics = self.df['Outcome'].value_counts()
         fig, ax = plt.subplots()
 
         ax.pie(diabetics, labels=diabetics.index, autopct='%1.1f%%')
@@ -128,6 +146,10 @@ class DiabetesModel:
     @staticmethod
     def load_bar_graph_bmi(master):
         pass
+
+    @staticmethod
+    def load_graph(master, x, y):
+        frame = ctk.CTkFrame(master=master)
 
 
 if __name__ == '__main__':
