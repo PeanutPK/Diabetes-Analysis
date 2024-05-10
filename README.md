@@ -16,6 +16,26 @@ Information table image sources
 and
 [Glucose](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.breathewellbeing.in%2Fblog%2Fchart-of-normal-blood-sugar-levels-for-adults-with-diabetes%2F&psig=AOvVaw1KA7FeBxHNuOHrIE0pD0hM&ust=1715172721579000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCJiUmrvK-4UDFQAAAAAdAAAAABBi)
 
+## Files
+
+| file              | Description                                                                        |
+|-------------------|------------------------------------------------------------------------------------|
+| application.py    | The class for controlling both UI and Model.                                       |
+| diabetes_model.py | The model class that load and compute data.                                        |
+| diabetes_view.py  | The GUI class for user interface.                                                  |
+| main.py           | Main script to run the program.                                                    |
+| data              | Folder that contain both pictures and data for model to compute and UI to display. |
+
+## Diagrams
+
+### UML Class Diagram
+
+![UML Class Diagram](/data/uml_diagram/diabetes_class_diagram.png)
+
+### UML Sequence Diagram
+
+![UML Sequence Diagram]()
+
 ## Installation and How to run
 
 ### Installation
