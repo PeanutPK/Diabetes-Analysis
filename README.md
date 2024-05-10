@@ -30,15 +30,16 @@ and
 
 Windows and macOS have only slightly different when it comes to menubar.
 
-| Tab(Windows)  | Example                                     |
-|---------------|---------------------------------------------|
-| Home(Windows) | ![Windows home](/snapshots/window_home.png) |
-
 | Tab(macOS)                  | Example                                                                                  |
 |-----------------------------|------------------------------------------------------------------------------------------|
 | Storytelling(Home)          | ![macOS home](/snapshots/storytelling.png)                                               |
 | Histogram and statistic tab | ![histogram](/snapshots/important_hist.png) ![statistic](/snapshots/important_stat.png)  |
 | Freestyle tab               | ![histogram](/snapshots/freestyle_hist.png) ![scatter](/snapshots/freestyle_scatter.png) |
+
+| Tab(Other type)  | Example                                     |
+|------------------|---------------------------------------------|
+| Home(Windows)    | ![Windows home](/snapshots/window_home.png) |
+| Home(Light Mode) | ![Windows home](/snapshots/light_mode.png)  |
 
 ## Diagrams
 
