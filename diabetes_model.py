@@ -149,7 +149,7 @@ class DiabetesModel(Data):
             canvas.get_tk_widget().pack(side=ctk.TOP, fill='both')
 
             canvas.draw()
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, KeyError):
             pass
 
     def load_storytelling_corr(self, master):
