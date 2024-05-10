@@ -238,7 +238,7 @@ class DiabetesUI(ctk.CTk):
         """
         for widget in self.btn_frame.winfo_children():
             widget.configure(command=lambda name=widget.cget('text'):
-                             self.create_image(name))
+            self.create_image(name))
 
     def create_image(self, name: str):
         """
@@ -291,7 +291,7 @@ class DiabetesUI(ctk.CTk):
                 if combo.get() == 'Histogram':
                     widget.configure(command=
                                      lambda name=widget.cget('text'): (
-                                         self.model.load_graph_outcome(
+                                         self.model.load_hist_outcome(
                                              self.stat_graph_tab, name)))
                 elif combo.get() == 'Statistic':
                     widget.configure(command=
@@ -303,41 +303,79 @@ class DiabetesUI(ctk.CTk):
         bind_graph_tab_buttons()
 
     def graphs_plotting_tab(self):
+        """
+        This tab let user freely choose any attribute inside a csv file to plot
+        scatter or histogram.
+        """
         self.any_graph_tab = self.tabs.add('Free Style')
+        attributes = self.model.get_column()
+        attributes.insert(0, "None")
+
         graph_choice = ctk.CTkComboBox(self.any_graph_tab, state='readonly',
                                        values=['Histogram', 'Scatterplot'])
         graph_choice.set('Histogram')
         graph_choice.pack(side=ctk.TOP)
 
-        first_attribute = ctk.StringVar()
-        second_attribute = ctk.StringVar()
+        # Variables for combobox
+        first_attr = ctk.StringVar()
+        second_attr = ctk.StringVar()
+        hue_attr = ctk.StringVar()
 
+        # Frame for packing labels and combobox
         combo_frame = ctk.CTkFrame(self.any_graph_tab)
         combo_frame.pack(side=ctk.TOP, **OPTIONS, fill='both')
 
+        # Create X label and combobox for getting the first attribute.
         x_label = ctk.CTkLabel(combo_frame, text='X-axis')
         x_combobox = ctk.CTkComboBox(combo_frame, state='readonly',
-                                     variable=first_attribute,
-                                     values=self.model.get_column())
+                                     variable=first_attr,
+                                     values=attributes)
 
+        # Create Y label and combobox for getting the first attribute.
         y_label = ctk.CTkLabel(combo_frame, text='Y-axis')
         y_combobox = ctk.CTkComboBox(combo_frame, state='disabled',
-                                     variable=second_attribute,
-                                     values=self.model.get_column())
+                                     variable=second_attr,
+                                     values=attributes)
+
+        # Create HUE label and combobox for getting the attribute for HUE.
+        hue_label = ctk.CTkLabel(combo_frame, text='HUE')
+        hue_combobox = ctk.CTkComboBox(combo_frame, state='readonly',
+                                       variable=hue_attr,
+                                       values=attributes)
+
+        # Button for plotting
+        plot_button = ctk.CTkButton(master=combo_frame, text='plot',
+                                    command=lambda:
+                                    self.model.load_hist(self.any_graph_tab,
+                                                         first_attr.get()))
 
         x_label.grid(row=0, column=0, sticky=ctk.NW)
         y_label.grid(row=0, column=2, sticky=ctk.NE)
+        hue_label.grid(row=0, column=1, sticky=ctk.NE)
 
         x_combobox.grid(row=1, column=0, sticky=ctk.NW)
         y_combobox.grid(row=1, column=2, sticky=ctk.NE)
+        hue_combobox.grid(row=1, column=1, sticky=ctk.NE)
+
+        plot_button.grid(row=2, column=0, sticky=ctk.EW, columnspan=3)
+
         for i in range(3):
             combo_frame.columnconfigure(i, weight=1)
 
+        # TODO make this tab handle both histogram and scatterplot
         def set_type(event=None):
             if graph_choice.get() == 'Scatterplot':
                 y_combobox.configure(state='readonly')
-            else:
+                plot_button.configure(command=lambda:
+                                      self.model.load_correlations_scatter(
+                                          self.any_graph_tab, first_attr.get(),
+                                          second_attr.get(), hue_attr.get()))
+            elif graph_choice.get() == 'Histogram':
                 y_combobox.configure(state='disabled')
+                plot_button.configure(command=lambda:
+                                      self.model.load_hist(
+                                          self.any_graph_tab,
+                                          first_attr.get()))
 
         graph_choice.configure(command=set_type)
 
