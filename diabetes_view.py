@@ -1,6 +1,8 @@
-import customtkinter as ctk
+"""This module mainly focuses on formatting and binding handler for the UI."""
 from tkinter import Menu
 from PIL import Image
+import customtkinter as ctk
+
 from diabetes_model import DiabetesModel
 
 INTRO_TEXT = ("Introduction\n\n"
@@ -15,6 +17,7 @@ IMPORTANT_WIDGET = (ctk.CTkTabview, Menu, ctk.CTkButton)
 
 
 class DiabetesUI(ctk.CTk):
+    """GUI class for user to interact and pull data from Model class"""
 
     def __init__(self, **kwargs):
         """
@@ -317,11 +320,6 @@ class DiabetesUI(ctk.CTk):
         graph_choice.set('Histogram')
         graph_choice.pack(side=ctk.TOP)
 
-        # Variables for combobox
-        first_attr = ctk.StringVar()
-        second_attr = ctk.StringVar()
-        hue_attr = ctk.StringVar()
-
         # Frame for packing labels and combobox
         combo_frame = ctk.CTkFrame(self.any_graph_tab)
         combo_frame.pack(side=ctk.TOP, **OPTIONS, fill='both')
@@ -329,19 +327,16 @@ class DiabetesUI(ctk.CTk):
         # Create X label and combobox for getting the first attribute.
         x_label = ctk.CTkLabel(combo_frame, text='X-axis')
         x_combobox = ctk.CTkComboBox(combo_frame, state='readonly',
-                                     variable=first_attr,
                                      values=attributes)
 
         # Create Y label and combobox for getting the first attribute.
         y_label = ctk.CTkLabel(combo_frame, text='Y-axis')
         y_combobox = ctk.CTkComboBox(combo_frame, state='readonly',
-                                     variable=second_attr,
                                      values=attributes)
 
         # Create HUE label and combobox for getting the attribute for HUE.
         hue_label = ctk.CTkLabel(combo_frame, text='HUE')
         hue_combobox = ctk.CTkComboBox(combo_frame, state='readonly',
-                                       variable=hue_attr,
                                        values=attributes)
 
         x_combobox.set('None')
@@ -352,8 +347,8 @@ class DiabetesUI(ctk.CTk):
         plot_button = ctk.CTkButton(master=combo_frame, text='plot',
                                     command=lambda:
                                     self.model.load_hist(self.any_graph_tab,
-                                                         first_attr.get(),
-                                                         hue_attr.get()))
+                                                         x_combobox.get(),
+                                                         hue_combobox.get()))
 
         x_label.grid(row=0, column=0, sticky=ctk.NW)
         y_label.grid(row=0, column=2, sticky=ctk.NE)
@@ -372,15 +367,16 @@ class DiabetesUI(ctk.CTk):
             if graph_choice.get() == 'Scatterplot':
                 y_combobox.configure(state='readonly')
                 plot_button.configure(command=lambda:
-                                      self.model.load_correlations_scatter(
-                                          self.any_graph_tab, first_attr.get(),
-                                          second_attr.get(), hue_attr.get()))
+                self.model.load_correlations_scatter(
+                    self.any_graph_tab, x_combobox.get(),
+                    y_combobox.get(), hue_combobox.get()))
 
             elif graph_choice.get() == 'Histogram':
                 y_combobox.configure(state='disabled')
                 plot_button.configure(command=lambda:
-                                      self.model.load_hist(
-                                          self.any_graph_tab,
-                                          first_attr.get(), hue_attr.get()))
+                self.model.load_hist(
+                    self.any_graph_tab,
+                    x_combobox.get(), hue_combobox.get()))
+
         set_type()
         graph_choice.configure(command=set_type)

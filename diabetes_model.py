@@ -1,3 +1,4 @@
+"""This module mainly focuses on computing data and plotting graph."""
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,16 +10,18 @@ NAMES = ['BMI', 'BloodPressure', 'Age', 'Glucose']
 
 
 class Data:
+    """Data class for reading csv files and computing them."""
     def __init__(self):
         """Initialize data for plotting graph"""
         sns.set_theme(rc={'figure.figsize': (3, 3)})
         plt.rcParams['figure.figsize'] = [3, 3]
-        REPLACE = {1: 'Diabetic', 0: 'Not Diabetic'}
+        replace_data = {1: 'Diabetic', 0: 'Not Diabetic'}
 
         self.df = pd.read_csv('data/diabetes.csv')
-        self.df['Outcome'] = self.df['Outcome'].replace(REPLACE)
+        self.df['Outcome'] = self.df['Outcome'].replace(replace_data)
 
     def get_column(self):
+        """Return a list of all attributes inside a csv file."""
         return list(self.df.columns)
 
     @staticmethod
@@ -34,8 +37,12 @@ class Data:
             return 'Obese'
         if x >= 35:
             return 'Extremely Obese'
+        return 'Missing Data'
 
     def get_bmi_range(self):
+        """
+        Return a Dataframe of data with bmi range created in the last column.
+        """
         bmi_value = ['Underweight', 'Normal', 'Overweight',
                      'Obese', 'Extremely Obese']
         new_df = self.df.copy()
@@ -51,12 +58,20 @@ class DiabetesModel(Data):
     Module for computing and sometimes draw a graph (when the pattern is done)
     """
     def __init__(self):
+        """
+        Initialize the attribute for storing DataFrame of bmi range,
+        and Figure and Axes.
+        """
         super().__init__()
         self.bmi_range = self.get_bmi_range()
         self.fig = None
         self.ax = None
 
     def check_figure(self):
+        """
+        Check whether there is an existing figure
+        to close it before opening a new one.
+        """
         if self.fig is not None:
             plt.close(self.fig)
 
@@ -134,7 +149,7 @@ class DiabetesModel(Data):
             canvas.get_tk_widget().pack(side=ctk.TOP, fill='both')
 
             canvas.draw()
-        except ValueError:
+        except (ValueError, TypeError):
             pass
 
     def load_storytelling_corr(self, master):
@@ -214,7 +229,7 @@ class DiabetesModel(Data):
             canvas.get_tk_widget().pack(side=ctk.TOP, fill='both', expand=True)
             canvas.draw()
             graph_frame.pack(side=ctk.TOP, expand=True, fill='both')
-        except ValueError:
+        except (ValueError, TypeError):
             pass
 
     def load_hist_outcome(self, master: ctk.CTk, name: str):
@@ -236,8 +251,8 @@ if __name__ == '__main__':
     scrollable.pack(expand=True, fill='both')
 
     # enable true to test the code
-    graph_test = False
-    if graph_test:
+    TEST = False
+    if TEST:
         model.load_storytelling_hist(scrollable)
         model.load_storytelling_stat(scrollable)
         model.load_storytelling_corr(scrollable)
