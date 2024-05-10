@@ -128,20 +128,31 @@ class DiabetesModel(Data):
         :param y: Y-axis attribute for plotting a graph.
         :param hue: Determine the output hue of the graph to be yes or no
         """
-        fig, ax = plt.subplots()
+        try:
+            try:
+                widget = master.winfo_children()[2]
+                widget.destroy()
+            except IndexError:
+                pass
 
-        coefficient = np.corrcoef(self.df[x], self.df[y])[0, 1]
+            if hue == 'None':
+                hue = None
+            fig, ax = plt.subplots()
 
-        sns.scatterplot(self.df, x=x, y=y, hue=hue)
+            coefficient = np.corrcoef(self.df[x], self.df[y])[0, 1]
 
-        ax.set(xlabel=x, ylabel=y)
+            sns.scatterplot(self.df, x=x, y=y, hue=hue)
 
-        plt.title(f"{x} vs {y} & corr coeff: {coefficient:.2f}")
+            ax.set(xlabel=x, ylabel=y)
 
-        canvas = FigureCanvasTkAgg(fig, master=master)
-        canvas.get_tk_widget().pack(side=ctk.TOP, fill='both')
+            plt.title(f"{x} vs {y} & corr coeff: {coefficient:.2f}")
 
-        canvas.draw()
+            canvas = FigureCanvasTkAgg(fig, master=master)
+            canvas.get_tk_widget().pack(side=ctk.TOP, fill='both')
+
+            canvas.draw()
+        except ValueError:
+            pass
 
     def load_storytelling_corr(self, master):
         """
@@ -197,20 +208,22 @@ class DiabetesModel(Data):
             widget.destroy()
         except IndexError:
             pass
+        try:
+            graph_frame = ctk.CTkFrame(master)
 
-        graph_frame = ctk.CTkFrame(master)
+            fig, ax = plt.subplots()
 
-        fig, ax = plt.subplots()
+            sns.histplot(data=self.df, x=name)
 
-        sns.histplot(data=self.df, x=name)
+            ax.set(xlabel='', ylabel='Frequency')
 
-        ax.set(xlabel='', ylabel='Frequency')
-
-        plt.title('Diabetes Outcome for ' + name)
-        canvas = FigureCanvasTkAgg(fig, master=graph_frame)
-        canvas.get_tk_widget().pack(side=ctk.TOP, fill='both', expand=True)
-        canvas.draw()
-        graph_frame.pack(side=ctk.TOP, expand=True, fill='both')
+            plt.title('Diabetes Outcome for ' + name)
+            canvas = FigureCanvasTkAgg(fig, master=graph_frame)
+            canvas.get_tk_widget().pack(side=ctk.TOP, fill='both', expand=True)
+            canvas.draw()
+            graph_frame.pack(side=ctk.TOP, expand=True, fill='both')
+        except ValueError:
+            pass
 
 
 if __name__ == '__main__':
