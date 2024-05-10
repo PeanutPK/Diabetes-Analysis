@@ -136,6 +136,8 @@ class DiabetesModel(Data):
 
             if hue == 'None':
                 hue = None
+            graph_frame = ctk.CTkFrame(master)
+
             self.fig, self.ax = plt.subplots()
 
             coefficient = np.corrcoef(self.df[x], self.df[y])[0, 1]
@@ -146,10 +148,12 @@ class DiabetesModel(Data):
 
             plt.title(f"{x} vs {y} & corr coeff: {coefficient:.2f}")
 
-            canvas = FigureCanvasTkAgg(self.fig, master=master)
-            canvas.get_tk_widget().pack(side=ctk.TOP, fill='both')
+            canvas = FigureCanvasTkAgg(self.fig, master=graph_frame)
+            canvas.get_tk_widget().pack(side=ctk.TOP, fill='both', expand=True)
 
             canvas.draw()
+
+            graph_frame.pack(side=ctk.TOP, expand=True, fill='both')
         except (ValueError, TypeError, KeyError):
             messagebox.showerror(title='Invalid',
                                  message='Please check the attribute again')
