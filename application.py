@@ -1,7 +1,15 @@
+from diabetes_view import DiabetesUI
+from diabetes_model import DiabetesModel
+
+
 class DiabetesController:
-    def __init__(self, model, view):
-        self.model = model
-        self.view = view
+    def __init__(self):
+        self.model = DiabetesModel()
+        self.view = DiabetesUI()
+        self.view.setup_menubar()
 
     def run(self):
-        self.view.run()
+        """
+        Run class view mainloop.
+        """
+        self.view.mainloop()

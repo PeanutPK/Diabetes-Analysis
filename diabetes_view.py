@@ -36,6 +36,7 @@ class DiabetesUI(ctk.CTk):
         self.info_tab = None  # Information showing tab
         self.stat_graph_tab = None  # Important statistic and graph tab
         self.any_graph_tab = None  # Showing graph depending on user choice
+        self.protocol("WM_DELETE_WINDOW", self.quit)
         self.init_component()
 
     def setup_menubar(self):
@@ -383,13 +384,3 @@ class DiabetesUI(ctk.CTk):
                                           first_attr.get(), hue_attr.get()))
         set_type()
         graph_choice.configure(command=set_type)
-
-    def run(self):
-        """
-        Set up the menu bars and loop the main window.
-        Set protocol for an exiting window
-        as quit to stop any process after mainloop.
-        """
-        self.protocol("WM_DELETE_WINDOW", self.quit)
-        self.setup_menubar()
-        self.mainloop()
