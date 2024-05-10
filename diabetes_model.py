@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import customtkinter as ctk
+from tkinter import messagebox
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 NAMES = ['BMI', 'BloodPressure', 'Age', 'Glucose']
@@ -150,7 +151,8 @@ class DiabetesModel(Data):
 
             canvas.draw()
         except (ValueError, TypeError, KeyError):
-            pass
+            messagebox.showerror(title='Invalid',
+                                 message='Please check the attribute again')
 
     def load_storytelling_corr(self, master):
         """
@@ -230,7 +232,8 @@ class DiabetesModel(Data):
             canvas.draw()
             graph_frame.pack(side=ctk.TOP, expand=True, fill='both')
         except (ValueError, TypeError):
-            pass
+            messagebox.showerror(title='Invalid',
+                                 message='Please check the attribute again')
 
     def load_hist_outcome(self, master: ctk.CTk, name: str):
         """
