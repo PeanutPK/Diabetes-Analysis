@@ -235,6 +235,7 @@ if __name__ == '__main__':
     scrollable = ctk.CTkScrollableFrame(root)
     scrollable.pack(expand=True, fill='both')
 
+    # enable true to test the code
     graph_test = False
     if graph_test:
         model.load_storytelling_hist(scrollable)
