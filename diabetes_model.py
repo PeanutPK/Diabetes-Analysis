@@ -55,7 +55,7 @@ class DiabetesModel(Data):
         super().__init__()
         self.bmi_range = self.get_bmi_range()
 
-    def load_graph_outcome(self, master: ctk.CTk, name: str):
+    def load_hist_outcome(self, master: ctk.CTk, name: str):
         """
         Load a graph from the input name and pack it to the origin root.
         :param master: Original frame or root.
@@ -120,18 +120,19 @@ class DiabetesModel(Data):
             label = ctk.CTkLabel(master, text=f"{self.df[name].describe()}\n")
             label.pack(side=ctk.TOP)
 
-    def load_correlations_scatter(self, master, x, y):
+    def load_correlations_scatter(self, master, x, y, hue=None):
         """
         Plot a scatter plot with its correlation.
         :param master: Frame or Tab for packing the item inside.
         :param x: X-axis attribute for plotting a graph.
         :param y: Y-axis attribute for plotting a graph.
+        :param hue: Determine the output hue of the graph to be yes or no
         """
         fig, ax = plt.subplots()
 
         coefficient = np.corrcoef(self.df[x], self.df[y])[0, 1]
 
-        sns.scatterplot(self.df, x=x, y=y, hue='Outcome')
+        sns.scatterplot(self.df, x=x, y=y, hue=hue)
 
         ax.set(xlabel=x, ylabel=y)
 
@@ -147,9 +148,9 @@ class DiabetesModel(Data):
         Function that load all scatterplot that use in story telling.
         :param master: Frame or Tab for packing the item inside.
         """
-        self.load_correlations_scatter(master, 'BMI', 'BloodPressure')
-        self.load_correlations_scatter(master, 'Glucose', 'Insulin')
-        self.load_correlations_scatter(master, 'Glucose', 'BMI')
+        self.load_correlations_scatter(master, 'BMI', 'BloodPressure', 'Outcome')
+        self.load_correlations_scatter(master, 'Glucose', 'Insulin', 'Outcome')
+        self.load_correlations_scatter(master, 'Glucose', 'BMI', 'Outcome')
 
     def load_pie_chart(self, master):
         """
@@ -184,7 +185,10 @@ class DiabetesModel(Data):
         canvas.get_tk_widget().pack(side=ctk.TOP, expand=True, fill='both')
         canvas.draw()
 
-    def load_graph(self, master, name):
+    def select_graph(self, master, x_var, y_var):
+        pass
+
+    def load_hist(self, master, name):
         """
         A function that handles plotting histogram graph from attribute data.
         """
@@ -198,7 +202,7 @@ class DiabetesModel(Data):
 
         fig, ax = plt.subplots()
 
-        sns.histplot(self.df, x=name)
+        sns.histplot(data=self.df, x=name)
 
         ax.set(xlabel='', ylabel='Frequency')
 
