@@ -337,8 +337,9 @@ class DiabetesUI(ctk.CTk):
         # Create HUE label and combobox for getting the attribute for HUE.
         hue_label = ctk.CTkLabel(combo_frame, text='HUE')
         hue_combobox = ctk.CTkComboBox(combo_frame, state='readonly',
-                                       values=attributes)
+                                       values=['None', 'Outcome'])
 
+        # X Y HUE combobox
         x_combobox.set('None')
         y_combobox.set('None')
         hue_combobox.set('None')
