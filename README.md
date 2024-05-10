@@ -26,6 +26,12 @@ and
 | main.py           | Main script to run the program.                                                    |
 | data              | Folder that contain both pictures and data for model to compute and UI to display. |
 
+## Example UI
+
+| Tab | Example |
+|-----|---------|
+|     |         |
+
 ## Diagrams
 
 ### UML Class Diagram
@@ -34,7 +40,9 @@ and
 
 ### UML Sequence Diagram
 
-![UML Sequence Diagram]()
+#### Storytelling tab after clicks a correlation button and closes both windows
+
+![UML Sequence Diagram](/data/uml_diagram/diabetes_sequence_diagram.png)
 
 ## Installation and How to run
 
