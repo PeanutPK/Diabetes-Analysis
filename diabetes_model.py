@@ -54,32 +54,12 @@ class DiabetesModel(Data):
     def __init__(self):
         super().__init__()
         self.bmi_range = self.get_bmi_range()
+        self.fig = None
+        self.ax = None
 
-    def load_hist_outcome(self, master: ctk.CTk, name: str):
-        """
-        Load a graph from the input name and pack it to the origin root.
-        :param master: Original frame or root.
-        :param name: Name of the data to display histogram
-        """
-        try:
-            widget = master.winfo_children()[2]
-            widget.destroy()
-        except IndexError:
-            pass
-
-        graph_frame = ctk.CTkFrame(master)
-
-        fig, ax = plt.subplots()
-
-        sns.histplot(self.df, x=name, hue='Outcome', multiple='stack')
-
-        ax.set(xlabel='', ylabel='Frequency')
-
-        plt.title('Diabetes Outcome for ' + name)
-        canvas = FigureCanvasTkAgg(fig, master=graph_frame)
-        canvas.get_tk_widget().pack(side=ctk.TOP, fill='both', expand=True)
-        canvas.draw()
-        graph_frame.pack(side=ctk.TOP, expand=True, fill='both')
+    def check_figure(self):
+        if self.fig is not None:
+            plt.close(self.fig)
 
     def describe(self, master: ctk.CTkTabview, name: str):
         """
@@ -97,18 +77,20 @@ class DiabetesModel(Data):
         label.pack(side=ctk.TOP, expand=True, fill='both', anchor='n')
 
     def load_storytelling_hist(self, master: ctk.CTkScrollableFrame):
-        """Load all histograms only for storytelling page
+        """
+        Load all histograms only for storytelling page
         :param master: Frame or Tab for packing the item inside.
         """
+        self.check_figure()
         for name in NAMES:
-            fig, ax = plt.subplots()
+            self.fig, self.ax = plt.subplots()
 
             sns.histplot(self.df, x=name, hue='Outcome', multiple='stack')
 
-            ax.set(ylabel='Frequency')
+            self.ax.set(ylabel='Frequency')
 
             plt.title('Outcome for ' + name)
-            canvas = FigureCanvasTkAgg(fig, master=master)
+            canvas = FigureCanvasTkAgg(self.fig, master=master)
             canvas.get_tk_widget().pack(side=ctk.TOP, expand=True, fill='both')
             canvas.draw()
 
@@ -116,6 +98,7 @@ class DiabetesModel(Data):
         """Show descriptive statistics only for storytelling page
         :param master: Frame or Tab for packing the item inside.
         """
+        self.check_figure()
         for name in NAMES:
             label = ctk.CTkLabel(master, text=f"{self.df[name].describe()}\n")
             label.pack(side=ctk.TOP)
@@ -128,6 +111,7 @@ class DiabetesModel(Data):
         :param y: Y-axis attribute for plotting a graph.
         :param hue: Determine the output hue of the graph to be yes or no
         """
+        self.check_figure()
         try:
             try:
                 widget = master.winfo_children()[2]
@@ -137,17 +121,17 @@ class DiabetesModel(Data):
 
             if hue == 'None':
                 hue = None
-            fig, ax = plt.subplots()
+            self.fig, self.ax = plt.subplots()
 
             coefficient = np.corrcoef(self.df[x], self.df[y])[0, 1]
 
             sns.scatterplot(self.df, x=x, y=y, hue=hue)
 
-            ax.set(xlabel=x, ylabel=y)
+            self.ax.set(xlabel=x, ylabel=y)
 
             plt.title(f"{x} vs {y} & corr coeff: {coefficient:.2f}")
 
-            canvas = FigureCanvasTkAgg(fig, master=master)
+            canvas = FigureCanvasTkAgg(self.fig, master=master)
             canvas.get_tk_widget().pack(side=ctk.TOP, fill='both')
 
             canvas.draw()
@@ -168,13 +152,15 @@ class DiabetesModel(Data):
         Function that loads pie chart that uses in story telling.
         :param master: Frame or Tab for packing the item inside.
         """
-        diabetics = self.df['Outcome'].value_counts()
-        fig, ax = plt.subplots()
+        self.check_figure()
 
-        ax.pie(diabetics, labels=diabetics.index, autopct='%1.1f%%')
+        diabetics = self.df['Outcome'].value_counts()
+        self.fig, self.ax = plt.subplots()
+
+        self.ax.pie(diabetics, labels=diabetics.index, autopct='%1.1f%%')
         plt.title('Ratio of Diabetics and Non-Diabetics')
 
-        canvas = FigureCanvasTkAgg(fig, master=master)
+        canvas = FigureCanvasTkAgg(self.fig, master=master)
         canvas.get_tk_widget().pack(side=ctk.TOP, expand=True, fill='both')
 
         canvas.draw()
@@ -184,46 +170,62 @@ class DiabetesModel(Data):
         Function that plots a graph of bmi range that uses in story telling.
         :param master: Frame or Tab for packing the item inside.
         """
-        fig, ax = plt.subplots()
+        self.check_figure()
+
+        self.fig, self.ax = plt.subplots()
 
         sns.histplot(self.bmi_range, x='RangeBMI', hue='Outcome',
                      multiple='stack')
 
-        ax.set(ylabel='Frequency')
+        self.ax.set(ylabel='Frequency')
 
         plt.title('Outcome for BMI sort by range')
-        canvas = FigureCanvasTkAgg(fig, master=master)
+        canvas = FigureCanvasTkAgg(self.fig, master=master)
         canvas.get_tk_widget().pack(side=ctk.TOP, expand=True, fill='both')
         canvas.draw()
 
-    def select_graph(self, master, x_var, y_var):
-        pass
-
-    def load_hist(self, master, name):
+    def load_hist(self, master, name, hue=None):
         """
         A function that handles plotting histogram graph from attribute data.
         """
+        self.check_figure()
+
         try:
             widget = master.winfo_children()[2]
             widget.destroy()
         except IndexError:
             pass
+
         try:
+            if hue == "None":
+                hue = None
             graph_frame = ctk.CTkFrame(master)
 
-            fig, ax = plt.subplots()
+            self.fig, self.ax = plt.subplots()
 
-            sns.histplot(data=self.df, x=name)
+            sns.histplot(data=self.df, x=name, hue=hue)
 
-            ax.set(xlabel='', ylabel='Frequency')
+            self.ax.set(xlabel='', ylabel='Frequency')
 
-            plt.title('Diabetes Outcome for ' + name)
-            canvas = FigureCanvasTkAgg(fig, master=graph_frame)
+            if hue is None:
+                plt.title(f"{name} graph")
+            else:
+                plt.title(f"{name} graph with {hue} as hue")
+            canvas = FigureCanvasTkAgg(self.fig, master=graph_frame)
             canvas.get_tk_widget().pack(side=ctk.TOP, fill='both', expand=True)
             canvas.draw()
             graph_frame.pack(side=ctk.TOP, expand=True, fill='both')
         except ValueError:
             pass
+
+    def load_hist_outcome(self, master: ctk.CTk, name: str):
+        """
+        Load a graph from the input name and pack it to the origin root.
+        But this one will always use default hue as an outcome.
+        :param master: Original frame or root.
+        :param name: Name of the data to display histogram
+        """
+        self.load_hist(master, name, 'Outcome')
 
 
 if __name__ == '__main__':

@@ -347,7 +347,8 @@ class DiabetesUI(ctk.CTk):
         plot_button = ctk.CTkButton(master=combo_frame, text='plot',
                                     command=lambda:
                                     self.model.load_hist(self.any_graph_tab,
-                                                         first_attr.get()))
+                                                         first_attr.get(),
+                                                         hue_attr.get()))
 
         x_label.grid(row=0, column=0, sticky=ctk.NW)
         y_label.grid(row=0, column=2, sticky=ctk.NE)
@@ -369,12 +370,13 @@ class DiabetesUI(ctk.CTk):
                                       self.model.load_correlations_scatter(
                                           self.any_graph_tab, first_attr.get(),
                                           second_attr.get(), hue_attr.get()))
+
             elif graph_choice.get() == 'Histogram':
                 y_combobox.configure(state='disabled')
                 plot_button.configure(command=lambda:
                                       self.model.load_hist(
                                           self.any_graph_tab,
-                                          first_attr.get()))
+                                          first_attr.get(), hue_attr.get()))
 
         graph_choice.configure(command=set_type)
 
