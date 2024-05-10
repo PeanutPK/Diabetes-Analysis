@@ -362,7 +362,6 @@ class DiabetesUI(ctk.CTk):
         for i in range(3):
             combo_frame.columnconfigure(i, weight=1)
 
-        # TODO make this tab handle both histogram and scatterplot
         def set_type(event=None):
             if graph_choice.get() == 'Scatterplot':
                 y_combobox.configure(state='readonly')
