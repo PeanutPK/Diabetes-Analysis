@@ -333,7 +333,7 @@ class DiabetesUI(ctk.CTk):
 
         # Create Y label and combobox for getting the first attribute.
         y_label = ctk.CTkLabel(combo_frame, text='Y-axis')
-        y_combobox = ctk.CTkComboBox(combo_frame, state='disabled',
+        y_combobox = ctk.CTkComboBox(combo_frame, state='readonly',
                                      variable=second_attr,
                                      values=attributes)
 
@@ -342,6 +342,10 @@ class DiabetesUI(ctk.CTk):
         hue_combobox = ctk.CTkComboBox(combo_frame, state='readonly',
                                        variable=hue_attr,
                                        values=attributes)
+
+        x_combobox.set('None')
+        y_combobox.set('None')
+        hue_combobox.set('None')
 
         # Button for plotting
         plot_button = ctk.CTkButton(master=combo_frame, text='plot',
@@ -377,7 +381,7 @@ class DiabetesUI(ctk.CTk):
                                       self.model.load_hist(
                                           self.any_graph_tab,
                                           first_attr.get(), hue_attr.get()))
-
+        set_type()
         graph_choice.configure(command=set_type)
 
     def run(self):

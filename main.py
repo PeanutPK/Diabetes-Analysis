@@ -1,5 +1,5 @@
-from controller import App
+from diabetes_view import DiabetesUI
 
 if __name__ == '__main__':
-    app = App()
-    app.start()
+    app = DiabetesUI()
+    app.run()
